@@ -1,0 +1,22 @@
+{
+  "name": "csdumb",
+  "version": "0.0.0",
+  "authors": [
+    "Mark Farrall <mark.farrall@gmail.com>"
+  ],
+  "description": "Read only browse and open interface for Content Server",
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular": "~1.2.24",
+    "angular-route": "~1.2.24",
+    "angular-bootstrap": "~0.11.0",
+    "bootstrap-css-only": "~3.2.0"
+  }
+}

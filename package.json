@@ -1,0 +1,33 @@
+{
+  "name": "csdumb",
+  "version": "0.0.0",
+  "description": "Read only browse and open interface for Content Server",
+  "main": "gulp",
+  "scripts": {
+    "test": "gulp test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/markfarrall/csdumb.git"
+  },
+  "author": "Mark Farrall (mark.farrall@gmail.com)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/markfarrall/csdumb/issues"
+  },
+  "homepage": "https://github.com/markfarrall/csdumb",
+  "devDependencies": {
+    "gulp": "~3.8.8",
+    "gulp-clean": "~0.3.1",
+    "gulp-concat": "~2.4.0",
+    "gulp-rename": "~1.2.0",
+    "gulp-strip-debug": "~1.0.1",
+    "gulp-uglify": "~1.0.1",
+    "gulp-changed": "~1.0.0",
+    "gulp-jshint": "~1.8.4",
+    "yargs": "~1.3.1",
+    "run-sequence": "~0.3.6",
+    "gulp-minify-css": "~0.3.8",
+    "gulp-imagemin": "~1.0.1"
+  }
+}
