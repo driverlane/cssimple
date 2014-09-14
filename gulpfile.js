@@ -53,7 +53,7 @@ gulp.task('bower', function() {
 
 // copy the views
 gulp.task('views', function() {
-	return gulp.src('./src/components/**/*.html')
+	return gulp.src(['./src/components/**/*.html','./src/app/**/*.html'])
 		.pipe(gulp.dest('./dist/views/'));
 });
 
@@ -107,7 +107,7 @@ gulp.task('root', function() {
 });
 
 // copies all resources to dist
-gulp.task('copy', ['bower','components','css','img','js','root']);
+gulp.task('copy', ['bower','views','css','img','js','root']);
 
 // clean and build dist
 gulp.task('build', function() {
