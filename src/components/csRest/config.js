@@ -4,4 +4,4 @@
     0.1 - initial version September 2014 Mark Farrall
     --------------------------------------------------------------------------------  */
 	
-angular.module('contDocsSearch', []);
+angular.module('csRest', []);

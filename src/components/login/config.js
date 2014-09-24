@@ -4,8 +4,4 @@
     0.1 - initial version September 2014 Mark Farrall
     --------------------------------------------------------------------------------  */
 	
-angular.module('browse').controller('ContDocsSearchCtl', function($scope) {
-
-	// ???
-	
-});
+angular.module('login', []);

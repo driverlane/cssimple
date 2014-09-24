@@ -4,8 +4,21 @@
     0.1 - initial version September 2014 Mark Farrall
     --------------------------------------------------------------------------------  */
 	
-angular.module('browse').controller('AppCtl', function($scope) {
+angular.module('csDumb').controller('AppCtl', function($scope, $location, csFactory) {
 
-	// get a token for the REST API
+	// config - move to separate file/module?
+	$scope.singleSignonPath = '/otcs/cs.exe';
+	$scope.apiPath = '/otcs/cs.exe/api/v1';
+	$scope.startingParent = 2000;
+
+	// set up the initial scope variables
+	$scope.ssoSupported = true;
+	
+	if ($scope.authenticated) {
+		$location.path('browse');
+	}
+	else {
+		$location.path('login');
+	}
 
 });

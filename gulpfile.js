@@ -8,6 +8,10 @@ var imagemin = require('gulp-imagemin');
 var stripDebug = require('gulp-strip-debug');
 var uglify = require('gulp-uglify');
 var jshint = require('gulp-jshint');
+var filter = require('gulp-filter');
+var flatten = require('gulp-flatten');
+var bowerFiles = require('main-bower-files');
+var ngAnnotate = require('gulp-ng-annotate');
 //var karma = require('gulp-karma');
 var argv = require('yargs').argv;
 var runSequence = require('run-sequence');
@@ -46,9 +50,35 @@ gulp.task('clean', function() {
 
 // copy the bower components
 gulp.task('bower', function() {
-	return gulp.src('./src/bower_components/**/*')
-		.pipe(changed('./dist/bower_components/'))
-		.pipe(gulp.dest('./dist/bower_components/'));
+
+	var jsFilter = filter('*.js');
+    var cssFilter = filter('*.css');
+    var fontFilter = filter(['*.eot', '*.woff', '*.svg', '*.ttf']);
+	
+	return gulp.src(bowerFiles())
+	
+		// copy the javascript
+		.pipe(jsFilter)
+        .pipe(concat('vendor.js'))
+        .pipe(gulp.dest('./dist/js/'))
+        .pipe(rename('vendor.min.js'))
+		.pipe(stripDebug())
+        .pipe(uglify())
+        .pipe(gulp.dest('./dist/js/'))
+		.pipe(jsFilter.restore())
+
+		// copy the css
+		.pipe(cssFilter)
+        .pipe(concat('vendor.css'))
+		.pipe(cssminify())
+		.pipe(gulp.dest('./dist/css/'))
+		.pipe(cssFilter.restore())
+
+		// copy the fonts
+		.pipe(fontFilter)
+		.pipe(flatten())
+		.pipe(gulp.dest('./dist/fonts'));
+
 });
 
 // copy the views
@@ -60,7 +90,7 @@ gulp.task('views', function() {
 // combine, minify and copy the css
 gulp.task('css', function() {
 	return gulp.src(['./src/css/*.css'])
-		.pipe(concat('style.css'))
+		.pipe(concat('app.css'))
 		.pipe(cssminify())
 		.pipe(gulp.dest('./dist/css/'));
 });
@@ -68,7 +98,7 @@ gulp.task('css', function() {
 // combine and copy the css
 gulp.task('cssnomin', function() {
 	return gulp.src(['./src/css/*.css'])
-		.pipe(concat('style.css'))
+		.pipe(concat('app.css'))
 		.pipe(gulp.dest('./dist/css/'));
 });
 
@@ -87,6 +117,7 @@ gulp.task('js', function() {
         .pipe(gulp.dest('./dist/js/'))
         .pipe(rename('app.min.js'))
 		.pipe(stripDebug())
+		.pipe(ngAnnotate())
         .pipe(uglify())
         .pipe(gulp.dest('./dist/js/'));
 });
@@ -97,6 +128,7 @@ gulp.task('jsnomin', function() {
         .pipe(concat('app.js'))
         .pipe(gulp.dest('./dist/js/'))
         .pipe(rename('app.min.js'))
+		.pipe(ngAnnotate())
         .pipe(gulp.dest('./dist/js/'));
 });
 
@@ -107,7 +139,7 @@ gulp.task('root', function() {
 });
 
 // copies all resources to dist
-gulp.task('copy', ['bower','views','css','img','js','root']);
+gulp.task('copy', ['views','css','img','js','root']);
 
 // clean and build dist
 gulp.task('build', function() {
@@ -170,10 +202,10 @@ gulp.task('watch', function() {
 gulp.task('copydev', function() {
 	runSequence(
 		['lint','unit'],
-		['bower','views','cssnomin','img','jsnomin','root'],
+		['views','cssnomin','img','jsnomin','root'],
 		'upload');
 });
 
 gulp.task('default', function() {
-	runSequence('clean','copydev','watch');
+	runSequence('clean','bower','copydev','watch');
 });

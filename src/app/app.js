@@ -6,26 +6,17 @@
 
 angular.module('csDumb', [
 	'ngRoute',
+	'ipCookie',
+	'csRest',
 	'browse',
-	'contDocsSearch'
+	'login'
 ]);
 
 angular.module('csDumb').config(['$routeProvider',
   function($routeProvider) {
     $routeProvider.
-      when('/', {
-        templateUrl: 'views/partials/app.html',
-        controller: 'AppCtl'
-      }).
-      when('/browse', {
-        templateUrl: 'views/browse/partials/browse.html',
-        controller: 'BrowseCtl'
-      }).
-      when('/contdocs', {
-        templateUrl: 'views/contDocsSearch/partials/search.html',
-        controller: 'ContDocsSearchCtl'
-      }).
-      otherwise({
-        redirectTo: '/'
-      });
+      when('/', { templateUrl: 'views/app.html', controller: 'AppCtl' }).
+      when('/browse', { templateUrl: 'views/browse/browse.html', controller: 'BrowseCtl' }).
+      when('/login', { templateUrl: 'views/login/login.html', controller: 'LoginCtl' }).
+      otherwise({ redirectTo: '/login' });
   }]);

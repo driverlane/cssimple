@@ -14,9 +14,21 @@
     "tests"
   ],
   "dependencies": {
-    "angular": "~1.2.24",
-    "angular-route": "~1.2.24",
+    "angular": "~1.2.25",
+    "angular-route": "~1.2.25",
     "angular-bootstrap": "~0.11.0",
-    "bootstrap-css-only": "~3.2.0"
+    "bootstrap-css-only": "~3.2.0",
+    "angular-cookie": "~4.0.2"
+  },
+  "resolutions": {
+    "angular": "~1.2.25"
+  },
+  "overrides": {
+    "bootstrap-css-only": {
+      "main": [
+        "fonts/*",
+        "css/bootstrap.css"
+      ]
+    }
   }
 }
