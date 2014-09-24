@@ -4,9 +4,11 @@
     0.1 - initial version September 2014 Mark Farrall
     --------------------------------------------------------------------------------  */
 	
-angular.module('browse').controller('BrowseCtl', function($scope, csFactory) {
+angular.module('csDumb').controller('AppController', function($rootScope) {
 
-	// test harness until I can get the REST API connected
-	$scope.nodes = csFactory.getChildren(2000);
+	// globals - should these be in a config module
+	$rootScope.singleSignonPath = '/otcs/cs.exe';
+	$rootScope.apiPath = '/otcs/cs.exe/api/v1';
+	$rootScope.startingParent = 2000;
 
 });

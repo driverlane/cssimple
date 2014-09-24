@@ -6,17 +6,19 @@
 
 angular.module('csDumb', [
 	'ngRoute',
-	'ipCookie',
-	'csRest',
-	'browse',
-	'login'
+	'csRepository',
+	'ui.bootstrap',
+	'ui.bootstrap.modal',
+	// remove the tester
+	'tester',
+	'browse'
 ]);
 
 angular.module('csDumb').config(['$routeProvider',
-  function($routeProvider) {
-    $routeProvider.
-      when('/', { templateUrl: 'views/app.html', controller: 'AppCtl' }).
-      when('/browse', { templateUrl: 'views/browse/browse.html', controller: 'BrowseCtl' }).
-      when('/login', { templateUrl: 'views/login/login.html', controller: 'LoginCtl' }).
-      otherwise({ redirectTo: '/login' });
-  }]);
+function($routeProvider) {
+	$routeProvider.
+		//when('/', { templateUrl: 'views/app.html', controller: 'AppController' }).
+		when('/browse', { templateUrl: 'views/browse/browse.html', controller: 'BrowseController' }).
+		when('/tester', { templateUrl: 'views/tester/tester.html', controller: 'TesterController' }).
+		otherwise({ redirectTo: '/browse' });
+}]);

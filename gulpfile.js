@@ -1,5 +1,5 @@
 var gulp = require('gulp');
-var clean = require('gulp-clean');
+var clean = require('gulp-rimraf');
 var changed = require('gulp-changed');
 var concat = require('gulp-concat');
 var cssminify = require('gulp-minify-css');
@@ -152,6 +152,8 @@ gulp.task('build', function() {
 gulp.task('upload', function() {
 	var paths = getPaths();
 	for (var i = 0; i < paths.length; i++) {
+		gulp.src(paths[i] + '*', {read: false})
+			.pipe(clean());
 		gulp.src('./dist/**/*.*')
 			.pipe(gulp.dest(paths[i]));
 	}

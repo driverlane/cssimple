@@ -4,7 +4,13 @@
     0.1 - initial version September 2014 Mark Farrall
     --------------------------------------------------------------------------------  */
 	
-angular.module('csRest').factory('csFactory', function() {
+angular.module('csRepository').factory('csRepository', function() {
+
+	var initialised = false;
+	var apiPath = '';
+	var authenticated = false;
+	var ssoSupported = true;
+	var token = '';
 
 	var getChildren = function (parentId) {
 		return  [
@@ -21,6 +27,11 @@ angular.module('csRest').factory('csFactory', function() {
 
 	// return the public functions
 	return {
+		initialised: initialised,
+		apiPath: apiPath,
+		authenticated: authenticated,
+		ssoSupported: ssoSupported,
+		token: token,
 		getChildren: getChildren
 	};
 	

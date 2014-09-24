@@ -12,10 +12,10 @@ angular.module('browse', []);
     0.1 - initial version September 2014 Mark Farrall
     --------------------------------------------------------------------------------  */
 	
-angular.module('browse').controller('BrowseCtl', function($scope, csFactory) {
+angular.module('browse').controller('BrowseController', function($scope, csRepository) {
 
-	// test harness until I can get the REST API connected
-	$scope.nodes = csFactory.getChildren(2000);
+	// get the nodes for the starting folder
+	$scope.nodes = csRepository.getChildren(2000);
 
 });
 
@@ -25,7 +25,7 @@ angular.module('browse').controller('BrowseCtl', function($scope, csFactory) {
     0.1 - initial version September 2014 Mark Farrall
     --------------------------------------------------------------------------------  */
 	
-angular.module('csRest', []);
+angular.module('csRepository', []);
 
 /*  --------------------------------------------------------------------------------
     Version history
@@ -33,7 +33,25 @@ angular.module('csRest', []);
     0.1 - initial version September 2014 Mark Farrall
     --------------------------------------------------------------------------------  */
 	
-angular.module('csRest').factory('csFactory', function() {
+angular.module('csRepository').controller('LoginController', function($scope) {
+
+	
+	
+});
+
+/*  --------------------------------------------------------------------------------
+    Version history
+    --------------------------------------------------------------------------------
+    0.1 - initial version September 2014 Mark Farrall
+    --------------------------------------------------------------------------------  */
+	
+angular.module('csRepository').factory('csRepository', function() {
+
+	var initialised = false;
+	var apiPath = '';
+	var authenticated = false;
+	var ssoSupported = true;
+	var token = '';
 
 	var getChildren = function (parentId) {
 		return  [
@@ -50,6 +68,11 @@ angular.module('csRest').factory('csFactory', function() {
 
 	// return the public functions
 	return {
+		initialised: initialised,
+		apiPath: apiPath,
+		authenticated: authenticated,
+		ssoSupported: ssoSupported,
+		token: token,
 		getChildren: getChildren
 	};
 	
@@ -61,30 +84,23 @@ angular.module('csRest').factory('csFactory', function() {
     0.1 - initial version September 2014 Mark Farrall
     --------------------------------------------------------------------------------  */
 	
-angular.module('login', []);
+angular.module('tester', []);
 
-/*  --------------------------------------------------------------------------------
-    Version history
-    --------------------------------------------------------------------------------
-    0.1 - initial version September 2014 Mark Farrall
-    --------------------------------------------------------------------------------  */
+/* --------------------------------------------------------------------------------
+ Version history
+ --------------------------------------------------------------------------------
+ 0.1 - initial version September 2014 Mark Farrall
+ -------------------------------------------------------------------------------- */
 	
-angular.module('login').controller('LoginCtl', function($scope, $location) {
+angular.module('tester').controller('TesterController', function($scope, $modal) {
 
-	var login = {};
+	$scope.message = 'Budgie';
 	
-	// try single signon if it hasn't failed previously
-	if ($scope.ssoSupported) {
-		login.status = 'Attempting single sign on';
+	var dialog = $modal.open({'templateUrl':'./views/csRepository/login.html'});
+	
+	$scope.closeDialog	= function(result) {
+		dialog.close('ok');
 	}
-	else {
-		login.status = 'Please enter your user details';
-	}
-
-	// sso loaded so cancel
-	window.ssoLoaded = function() {
-		alert('sso finished');
-	};
 	
 });
 
@@ -96,41 +112,34 @@ angular.module('login').controller('LoginCtl', function($scope, $location) {
 
 angular.module('csDumb', [
 	'ngRoute',
-	'ipCookie',
-	'csRest',
-	'browse',
-	'login'
+	'csRepository',
+	'ui.bootstrap',
+	'ui.bootstrap.modal',
+	// remove the tester
+	'tester',
+	'browse'
 ]);
 
 angular.module('csDumb').config(['$routeProvider',
-  function($routeProvider) {
-    $routeProvider.
-      when('/', { templateUrl: 'views/app.html', controller: 'AppCtl' }).
-      when('/browse', { templateUrl: 'views/browse/browse.html', controller: 'BrowseCtl' }).
-      when('/login', { templateUrl: 'views/login/login.html', controller: 'LoginCtl' }).
-      otherwise({ redirectTo: '/login' });
-  }]);
+function($routeProvider) {
+	$routeProvider.
+		//when('/', { templateUrl: 'views/app.html', controller: 'AppController' }).
+		when('/browse', { templateUrl: 'views/browse/browse.html', controller: 'BrowseController' }).
+		when('/tester', { templateUrl: 'views/tester/tester.html', controller: 'TesterController' }).
+		otherwise({ redirectTo: '/browse' });
+}]);
+
 /*  --------------------------------------------------------------------------------
     Version history
     --------------------------------------------------------------------------------
     0.1 - initial version September 2014 Mark Farrall
     --------------------------------------------------------------------------------  */
 	
-angular.module('csDumb').controller('AppCtl', function($scope, $location, csFactory) {
+angular.module('csDumb').controller('AppController', function($rootScope) {
 
-	// config - move to separate file/module?
-	$scope.singleSignonPath = '/otcs/cs.exe';
-	$scope.apiPath = '/otcs/cs.exe/api/v1';
-	$scope.startingParent = 2000;
-
-	// set up the initial scope variables
-	$scope.ssoSupported = true;
-	
-	if ($scope.authenticated) {
-		$location.path('browse');
-	}
-	else {
-		$location.path('login');
-	}
+	// globals - should these be in a config module
+	$rootScope.singleSignonPath = '/otcs/cs.exe';
+	$rootScope.apiPath = '/otcs/cs.exe/api/v1';
+	$rootScope.startingParent = 2000;
 
 });

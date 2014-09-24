@@ -4,4 +4,8 @@
     0.1 - initial version September 2014 Mark Farrall
     --------------------------------------------------------------------------------  */
 	
-angular.module('login', []);
+angular.module('csRepository').controller('LoginController', function($scope) {
+
+	
+	
+});
