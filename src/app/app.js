@@ -9,16 +9,25 @@ angular.module('csDumb', [
 	'csRepository',
 	'ui.bootstrap',
 	'ui.bootstrap.modal',
-	// remove the tester
-	'tester',
+	// remove the sandpit
+	'sandpit',
 	'browse'
 ]);
 
-angular.module('csDumb').config(['$routeProvider',
-function($routeProvider) {
+// globals
+// todo - work out whether these should be moved
+angular.module('csDumb').run(function($rootScope) {
+	$rootScope.singleSignonPath = '/otcs/cs.exe';
+	$rootScope.apiPath = '/otcs/cs.exe/api/v1';
+	$rootScope.startNode = 2000;
+});
+
+angular.module('csDumb').config(['$routeProvider', function($routeProvider, $rootScope) {
+
 	$routeProvider.
-		//when('/', { templateUrl: 'views/app.html', controller: 'AppController' }).
 		when('/browse', { templateUrl: 'views/browse/browse.html', controller: 'BrowseController' }).
-		when('/tester', { templateUrl: 'views/tester/tester.html', controller: 'TesterController' }).
+		when('/browse/:id', { templateUrl: 'views/browse/browse.html', controller: 'BrowseController' }).
+		// todo remove the sandpit
+		when('/sandpit', { templateUrl: 'views/sandpit/sandpit.html', controller: 'SandpitController' }).
 		otherwise({ redirectTo: '/browse' });
 }]);

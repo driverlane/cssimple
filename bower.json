@@ -18,7 +18,8 @@
     "angular-route": "~1.2.25",
     "angular-bootstrap": "~0.11.0",
     "bootstrap-css-only": "~3.2.0",
-    "angular-cookie": "~4.0.2"
+    "angular-cookie": "~4.0.2",
+    "font-awesome": "~4.2.0"
   },
   "resolutions": {
     "angular": "~1.2.25"
@@ -30,5 +31,8 @@
         "css/bootstrap.css"
       ]
     }
+  },
+  "devDependencies": {
+    "angular-mocks": "~1.2.25"
   }
 }

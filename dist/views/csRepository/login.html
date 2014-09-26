@@ -1,16 +1,18 @@
-<div class="modal-content" ng-controller="TesterController">
+<div class="modal-content">
 	<div class="modal-header">
-		<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-		<h4 class="modal-title">Modal title</h4>
+		<h4 class="modal-title">Login</h4>
 	</div>
 	<div class="modal-body">
-		<form class="form-signin">
-			<input type="text" class="form-control" placeholder="User name" required autofocus><br>
-			<input type="password" class="form-control" placeholder="Password">
-		</form>
+		<div ng-hide="ssoStatus">
+			<form class="form-signin">
+				<input type="text" ng-model="user.name" class="form-control" placeholder="User name" required autofocus><br>
+				<input type="password" ng-model="user.password" class="form-control" placeholder="Password">
+			</form>
+		</div>
+		<div><br><p ng-class="{true: 'bg-warning'}[userError]">{{status}}</p></div>
 	</div>
 	<div class="modal-footer">
-		<button type="button" class="btn btn-default" ng-click="closeDialog('Cancel')">Cancel</button>
-		<button type="button" class="btn btn-primary" ng-click="closeDialog('Login')">Login</button>
+		<button type="button" class="btn btn-primary" ng-click="login()">Login</button>
 	</div>
+	<iframe onload="ssoLoaded()" style="display:none">
 </div>

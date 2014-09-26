@@ -1,7 +1,18 @@
-<div>
-	<ul>
-		<li ng-repeat="node in nodes">
-			{{node.name}} - {{node.sub_type}}
-		</li>
-	</ul>
+<div class="container">
+	<div class="browse-container">
+		<i browse-icon="{{container.data.type}}"></i>
+		<div class="browse-container-name">{{container.data.name}}</div>
+	</div>
+	<div id="itemList">
+		<ul class="browse-panel">
+			<li ng-repeat="node in nodes" class="browse-item" ng-click="openNode(node.type_name, node.id)">
+				<span browse-icon="{{node.type}}"></span>
+				<div class="browse-details">
+					<h4 class="">{{node.name}}</h4>
+					<!-- todo convert this to a localised date -->
+					<p>Modified: {{node.modify_date}}</p>
+				</div>
+			</li>
+		</ul>
+	</div>
 </div>
