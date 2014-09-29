@@ -34,10 +34,10 @@ gulp.task('lint', function() {
 
 // use karma to run unit tests
 gulp.task('unit', function(done) {
-	karma.start({
+	/*karma.start({
 		configFile: __dirname + '/karma.conf.js',
 		singleRun: true
-	}, done);
+	}, done);*/
 });
 
 // headless version for watch based testing
@@ -51,11 +51,11 @@ gulp.task('unitlight', function(done) {
 
 // use protractor to run system tests
 gulp.task('system', function (cb) {
-  exec('node .\\node_modules\\protractor\\bin\\protractor -configFile protractor.config.js', function (err, stdout, stderr) {
+  /*exec('node .\\node_modules\\protractor\\bin\\protractor -configFile protractor.config.js', function (err, stdout, stderr) {
     console.log(stdout);
     console.log(stderr);
     cb(err);
-  });
+  });*/
 });
 
 // download/update the selenium server
@@ -106,13 +106,6 @@ gulp.task('bower', function() {
 		.pipe(flatten())
 		.pipe(gulp.dest('./dist/fonts'));
 
-});
-
-// copy the views
-gulp.task('views', function() {
-	return gulp.src(['./src/components/**/*.html','./src/app/**/*.html'])
-		.pipe(gulp.dest('./dist/views/'))
-		.pipe(gulpif(reloading, livereload()));
 });
 
 // combine, minify and copy the css
@@ -174,12 +167,19 @@ gulp.task('root', function() {
 		.pipe(gulpif(reloading, livereload()));
 });
 
+// copy the views
+gulp.task('views', function() {
+	return gulp.src(['./src/components/**/*.html','./src/app/**/*.html'])
+		.pipe(gulp.dest('./dist/views/'))
+		.pipe(gulpif(reloading, livereload()));
+});
+
 // copies all resources to dist
-gulp.task('copy', ['views','css','img','js','root']);
+gulp.task('copy', ['css','img','js','root','views']);
 
 // clean and build dist
 gulp.task('build', function() {
-	runsequence('lint','unit','clean','copy','system');
+	runsequence('lint','unit','clean','bower','copy','system');
 });
 
 /* upload task */
@@ -188,8 +188,6 @@ gulp.task('build', function() {
 gulp.task('upload', function() {
 	var paths = getPaths();
 	for (var i = 0; i < paths.length; i++) {
-		gulp.src(paths[i] + '*', {read: false})
-			.pipe(clean());
 		gulp.src('./dist/**/*.*')
 			.pipe(gulp.dest(paths[i]));
 	}
@@ -240,42 +238,30 @@ gulp.task('watch', function() {
 	// create the server
 	var server = connect();
 	server.use(serveStatic('./dist/'));
-	server.listen(process.env.PORT || 80);
+	server.listen(process.env.PORT || 8008);
 
 	// start livereload
 	livereload.listen();
 	reloading = true;
 
 	// start watching
-    gulp.watch(['./src/.html'], ['root']);
+    gulp.watch(['./src/*.html'], ['root']);
     gulp.watch(['./src/components/**/*.html'], ['views']);
     gulp.watch(['./src/components/**/*.js','./src/app/**/*.js'], ['jsnomin','lint','unitlight']);
 	gulp.watch('./src/css/*.css', ['cssnomin']);
 });
 
-gulp.task('watchremote', function() {
-    gulp.watch(['./src/.html'], 'rootremote');
-    gulp.watch(['./src/components/**/*.html'], 'viewsremote');
-    gulp.watch(['./src/components/**/*.js','./src/app/**/*.js'], 'jsnominremote');
-    gulp.watch('./src/css/*.css', 'cssnominremote');
-});
+gulp.task('watchiis', function() {
 
-gulp.task('rootremote', function() {
-	runsequence(['root','upload']);
-});
+	// start livereload
+	livereload.listen();
+	reloading = true;
 
-gulp.task('viewsremote', function() {
-	runsequence(['views','upload']);
+    gulp.watch(['./src/*.html'], ['root']);
+    gulp.watch(['./src/components/**/*.html'], ['views']);
+    gulp.watch(['./src/components/**/*.js','./src/app/**/*.js'], ['jsnomin','lint','unitlight']);
+	gulp.watch('./src/css/*.css', ['cssnomin']);
 });
-
-gulp.task('jsnominremote', function() {
-	runsequence(['jsnomin','upload']);
-});
-
-gulp.task('cssnominremote', function() {
-	runsequence(['cssnomin','upload']);
-});
-
 
 // copies all unminified resources to dist and starts a local server
 gulp.task('copydev', function() {
@@ -285,18 +271,10 @@ gulp.task('copydev', function() {
 	);
 });
 
-// copies all unminified resources to dist and then to the remote server
-gulp.task('copydevremote', function() {
-	runsequence(
-		['lint','unit'],
-		['views','cssnomin','img','jsnomin','root'],
-		'upload');
-});
-
 gulp.task('default', function() {
 	runsequence('clean','bower','copydev','watch');
 });
 
-gulp.task('remote', function() {
-	runsequence('clean','bower','copydevremote','watchremote');
+gulp.task('iis', function() {
+	runsequence('clean','bower','copydev','watchiis');
 });
