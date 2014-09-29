@@ -5,20 +5,22 @@ var concat = require('gulp-concat');
 var cssminify = require('gulp-minify-css');
 var rename = require('gulp-rename');
 var imagemin = require('gulp-imagemin');
-var stripDebug = require('gulp-strip-debug');
+var stripdebug = require('gulp-strip-debug');
 var uglify = require('gulp-uglify');
 var jshint = require('gulp-jshint');
 var filter = require('gulp-filter');
 var flatten = require('gulp-flatten');
-var bowerFiles = require('main-bower-files');
-var ngAnnotate = require('gulp-ng-annotate');
+var bowerfiles = require('main-bower-files');
+var annotate = require('gulp-ng-annotate');
 var karma = require('karma').server;
 var argv = require('yargs').argv;
-var runSequence = require('run-sequence');
+var runsequence = require('run-sequence');
 var livereload = require('gulp-livereload');
 var gulpif = require('gulp-if');
-var gutil = require('gulp-util');
 var plumber = require('gulp-plumber');
+var protractor = require('protractor');
+var exec = require('child_process').exec;
+var gutil = require('gulp-util');
 
 /* testing tasks */
 
@@ -38,10 +40,31 @@ gulp.task('unit', function(done) {
 	}, done);
 });
 
+// headless version for watch based testing
+gulp.task('unitlight', function(done) {
+	/*karma.start({
+		configFile: __dirname + '/karma.conf.js',
+		singleRun: true,
+		browsers: ['PhantomJS']
+	}, done);*/
+});
+
 // use protractor to run system tests
-gulp.task('system', function() {
-	return gulp.src('fake/path');
-	// todo setup the system testing
+gulp.task('system', function (cb) {
+  exec('node .\\node_modules\\protractor\\bin\\protractor -configFile protractor.config.js', function (err, stdout, stderr) {
+    console.log(stdout);
+    console.log(stderr);
+    cb(err);
+  });
+});
+
+// download/update the selenium server
+gulp.task('updatewebdriver', function (cb) {
+  exec('node .\\node_modules\\protractor\\bin\\webdriver-manager update --ie', function (err, stdout, stderr) {
+    console.log(stdout);
+    console.log(stderr);
+    cb(err);
+  });
 });
 
 /* dist tasks */
@@ -59,14 +82,14 @@ gulp.task('bower', function() {
     var cssFilter = filter('*.css');
     var fontFilter = filter(['*.eot', '*.woff', '*.svg', '*.ttf']);
 	
-	return gulp.src(bowerFiles())
+	return gulp.src(bowerfiles())
 	
 		// copy the javascript
 		.pipe(jsFilter)
         .pipe(concat('vendor.js'))
         .pipe(gulp.dest('./dist/js/'))
         .pipe(rename('vendor.min.js'))
-		.pipe(stripDebug())
+		.pipe(stripdebug())
         .pipe(uglify())
         .pipe(gulp.dest('./dist/js/'))
 		.pipe(jsFilter.restore())
@@ -125,8 +148,8 @@ gulp.task('js', function() {
         .pipe(concat('app.js'))
         .pipe(gulp.dest('./dist/js/'))
         .pipe(rename('app.min.js'))
-		.pipe(stripDebug())
-		.pipe(ngAnnotate())
+		.pipe(stripdebug())
+		.pipe(annotate())
         .pipe(uglify())
         .pipe(gulp.dest('./dist/js/'))
 		.pipe(gulpif(reloading, livereload()));		
@@ -139,7 +162,7 @@ gulp.task('jsnomin', function() {
         .pipe(concat('app.js'))
         .pipe(gulp.dest('./dist/js/'))
         .pipe(rename('app.min.js'))
-		.pipe(ngAnnotate())
+		.pipe(annotate())
         .pipe(gulp.dest('./dist/js/'))
 		.pipe(gulpif(reloading, livereload()));
 });
@@ -156,7 +179,7 @@ gulp.task('copy', ['views','css','img','js','root']);
 
 // clean and build dist
 gulp.task('build', function() {
-	runSequence('lint','unit','clean','copy','system');
+	runsequence('lint','unit','clean','copy','system');
 });
 
 /* upload task */
@@ -226,19 +249,37 @@ gulp.task('watch', function() {
 	// start watching
     gulp.watch(['./src/.html'], ['root']);
     gulp.watch(['./src/components/**/*.html'], ['views']);
-    gulp.watch(['./src/components/**/*.js','./src/app/**/*.js'], ['jsnomin']);
+    gulp.watch(['./src/components/**/*.js','./src/app/**/*.js'], ['jsnomin','lint','unitlight']);
 	gulp.watch('./src/css/*.css', ['cssnomin']);
 });
 
 gulp.task('watchremote', function() {
-    gulp.watch(['./src/*.html','./src/components/**/*.html'], ['copydevremote']);
-    gulp.watch(['./src/components/**/*.js','./src/app/**/*.js'], ['copydevremote']);
-    gulp.watch('./src/css/*.css', ['copydev']);
+    gulp.watch(['./src/.html'], 'rootremote');
+    gulp.watch(['./src/components/**/*.html'], 'viewsremote');
+    gulp.watch(['./src/components/**/*.js','./src/app/**/*.js'], 'jsnominremote');
+    gulp.watch('./src/css/*.css', 'cssnominremote');
 });
+
+gulp.task('rootremote', function() {
+	runsequence(['root','upload']);
+});
+
+gulp.task('viewsremote', function() {
+	runsequence(['views','upload']);
+});
+
+gulp.task('jsnominremote', function() {
+	runsequence(['jsnomin','upload']);
+});
+
+gulp.task('cssnominremote', function() {
+	runsequence(['cssnomin','upload']);
+});
+
 
 // copies all unminified resources to dist and starts a local server
 gulp.task('copydev', function() {
-	runSequence(
+	runsequence(
 		['lint','unit'],
 		['views','cssnomin','img','jsnomin','root']
 	);
@@ -246,16 +287,16 @@ gulp.task('copydev', function() {
 
 // copies all unminified resources to dist and then to the remote server
 gulp.task('copydevremote', function() {
-	runSequence(
+	runsequence(
 		['lint','unit'],
 		['views','cssnomin','img','jsnomin','root'],
 		'upload');
 });
 
 gulp.task('default', function() {
-	runSequence('clean','bower','copydev','watch');
+	runsequence('clean','bower','copydev','watch');
 });
 
 gulp.task('remote', function() {
-	runSequence('clean','bower','copydev','watchremote');
+	runsequence('clean','bower','copydevremote','watchremote');
 });

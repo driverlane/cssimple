@@ -4,107 +4,6 @@
     0.1 - initial version September 2014 Mark Farrall
     --------------------------------------------------------------------------------  */
 	
-angular.module('browse', []);
-
-/*  --------------------------------------------------------------------------------
-    Version history
-    --------------------------------------------------------------------------------
-    0.1 - initial version September 2014 Mark Farrall
-    --------------------------------------------------------------------------------  */
-	
-angular.module('browse').controller('BrowseController', function($scope, $routeParams, $rootScope, $location, csRepository) {
-
-	// see if we've got an authenticated connection
-	if (!csRepository.authenticated) {
-		// todo authenticate
-		
-	}
-
-	// get the container node
-	var thisnode = $routeParams.id;
-	if (!thisnode) {
-		thisnode = $rootScope.startNode;
-	}
-
-	// get the details for the current container
-	$scope.container = csRepository.getNode(thisnode);
-	
-	// get the nodes for the current container
-	$scope.nodes = csRepository.getChildren(thisnode).data;
-
-	// handles the click event for nodes
-	$scope.openNode = function(type, id) {
-		switch(type) {
-			case 'Folder':
-				$location.path('browse/' + id);
-				break;
-			default:
-				// todo open this in the viewer
-				console.log('open document ' + id);
-				break;
-		}
-	};
-});
-
-/*  --------------------------------------------------------------------------------
-    Version history
-    --------------------------------------------------------------------------------
-    0.1 - initial version September 2014 Mark Farrall
-    --------------------------------------------------------------------------------  */
-	
-angular.module('browse').directive('browseIcon', function() {
-
-	return {
-		restrict: 'A',
-		replace: 'false',
-		link: function(scope, el, atts) {
-			var classes = 'browse-icon fa ';
-			switch(atts.browseIcon.toString()) {
-				case '141':
-					classes += 'fa-home fa-3x';
-					break;
-				case '0':
-					classes += 'fa-folder-open fa-3x';
-					break;
-				case '144':
-					classes += 'fa-file-pdf-o fa-3x';
-					break;
-				default:
-					classes += 'fa-bars fa-3x';
-					break;
-			}
-			el.attr('class', classes);
-			el.removeAttr('browse-icon');
-		}
-	};
-
-});
-
-/* glyphicons version
-
-			var classes = 'browse-icon glyphicon ';
-			switch(atts.browseIcon.toString()) {
-				case '141':
-					classes += 'glyphicon-home';
-					break;
-				case '0':
-					classes += 'glyphicon-folder-close';
-					break;
-				case '144':
-					classes += 'glyphicon-list-alt';
-					break;
-				default:
-					classes += 'glyphicon-cog';
-					break;
-			}
-
-
-/*  --------------------------------------------------------------------------------
-    Version history
-    --------------------------------------------------------------------------------
-    0.1 - initial version September 2014 Mark Farrall
-    --------------------------------------------------------------------------------  */
-	
 /* Dependencies
 
 	The csLogin service relies on ui.bootstrap.modal module (from the angular-bootstrap library)
@@ -181,17 +80,23 @@ angular.module('csRepository').controller('LoginController', function($scope, $m
     0.1 - initial version September 2014 Mark Farrall
     --------------------------------------------------------------------------------  */
 	
-angular.module('csRepository').factory('csRepository', function() {
+angular.module('csRepository').factory('csRepository', function(Restangular) {
 
 	var initialised = false;
-	var apiPath = '';
+	var apiPath = 'http://content.cgi.demo/otcs/cs.exe/api/v1';
 	var authenticated = false;
 	var ssoSupported = true;
 	var token = '';
-
+	
+	// create objects for the API types
+	var Nodes = Restangular.allUrl('nodes', apiPath);
+	window.tester = Nodes.getList('2000');
+	
 	var getNode = function(nodeId) {
+		
+		
 		// todo - convert to real call
-		return {"addable_types":[{"icon":"/img/webdoc/folder.gif","type":0,"type_name":"Folder"},{"icon":"/img/tinyali.gif","type":1,"type_name":"Shortcut"},{"icon":"/img/webattribute/16category.gif","type":131,"type_name":"Category"},{"icon":"/img/webdoc/cd.gif","type":136,"type_name":"Compound Document"},{"icon":"/img/webdoc/url.gif","type":140,"type_name":"URL"},{"icon":"/img/webdoc/doc.gif","type":144,"type_name":"Document"},{"icon":"/img/channel/16channel.gif","type":207,"type_name":"Channel"},{"icon":"/img/otemail/emailfolder.gif","type":751,"type_name":"E-mail Folder"}],"available_actions":[{"parameterless":false,"read_only":true,"type":"browse","type_name":"Browse","webnode_signature":null},{"parameterless":false,"read_only":false,"type":"update","type_name":"Update","webnode_signature":null}],"available_roles":[{"type":"audit","type_name":"Audit"},{"type":"categories","type_name":"Categories"}],"data":{"create_date":"2014-08-19T06:12:54","create_user_id":1000,"description":"","description_multilingual":{"en_US":""},"guid":null,"icon":"/img/webdoc/icon_library.gif","icon_large":"/img/webdoc/icon_library_large.gif","id":2000,"modify_date":"2014-09-02T03:03:03","modify_user_id":1000,"name":"Enterprise","name_multilingual":{"en_US":"Enterprise"},"owner_group_id":1001,"owner_user_id":1000,"parent_id":-1,"reserved":false,"reserved_date":null,"reserved_user_id":0,"type":141,"type_name":"Enterprise Workspace","volume_id":2000},"definitions":{"create_date":{"allow_undefined":false,"bulk_shared":false,"default_value":null,"description":null,"hidden":false,"key":"create_date","multi_value":false,"name":"Created","persona":"","read_only":true,"required":false,"type":-7,"type_name":"Date","valid_values":[],"valid_values_name":[]},"create_user_id":{"allow_undefined":false,"bulk_shared":false,"default_value":null,"description":null,"hidden":false,"key":"create_user_id","max_value":null,"min_value":null,"multi_value":false,"name":"Created By","persona":"user","read_only":false,"required":false,"type":2,"type_name":"Integer","valid_values":[],"valid_values_name":[]},"description":{"allow_undefined":false,"bulk_shared":false,"default_value":null,"description":null,"hidden":false,"key":"description","max_length":null,"min_length":null,"multiline":true,"multilingual":true,"multi_value":false,"name":"Description","password":false,"persona":"","read_only":false,"required":false,"type":-1,"type_name":"String","valid_values":[],"valid_values_name":[]},"guid":{"allow_undefined":false,"bulk_shared":false,"default_value":null,"description":null,"hidden":false,"key":"guid","multi_value":false,"name":"GUID","persona":"","read_only":false,"required":false,"type":-95,"type_name":"GUID","valid_values":[],"valid_values_name":[]},"icon":{"allow_undefined":false,"bulk_shared":false,"default_value":null,"description":null,"hidden":false,"key":"icon","max_length":null,"min_length":null,"multiline":false,"multilingual":false,"multi_value":false,"name":"Icon","password":false,"persona":"","read_only":false,"required":false,"type":-1,"type_name":"String","valid_values":[],"valid_values_name":[]},"icon_large":{"allow_undefined":false,"bulk_shared":false,"default_value":null,"description":null,"hidden":false,"key":"icon_large","max_length":null,"min_length":null,"multiline":false,"multilingual":false,"multi_value":false,"name":"Large Icon","password":false,"persona":"","read_only":false,"required":false,"type":-1,"type_name":"String","valid_values":[],"valid_values_name":[]},"id":{"allow_undefined":false,"bulk_shared":false,"default_value":null,"description":null,"hidden":false,"key":"id","max_value":null,"min_value":null,"multi_value":false,"name":"ID","persona":"node","read_only":false,"required":false,"type":2,"type_name":"Integer","valid_values":[],"valid_values_name":[]},"modify_date":{"allow_undefined":false,"bulk_shared":false,"default_value":null,"description":null,"hidden":false,"key":"modify_date","multi_value":false,"name":"Modified","persona":"","read_only":true,"required":false,"type":-7,"type_name":"Date","valid_values":[],"valid_values_name":[]},"modify_user_id":{"allow_undefined":false,"bulk_shared":false,"default_value":null,"description":null,"hidden":false,"key":"modify_user_id","max_value":null,"min_value":null,"multi_value":false,"name":"Modified By","persona":"user","read_only":false,"required":false,"type":2,"type_name":"Integer","valid_values":[],"valid_values_name":[]},"name":{"allow_undefined":false,"bulk_shared":false,"default_value":null,"description":null,"hidden":false,"key":"name","max_length":null,"min_length":null,"multiline":false,"multilingual":true,"multi_value":false,"name":"Name","password":false,"persona":"","read_only":false,"required":false,"type":-1,"type_name":"String","valid_values":[],"valid_values_name":[]},"owner_group_id":{"allow_undefined":false,"bulk_shared":false,"default_value":null,"description":null,"hidden":false,"key":"owner_group_id","max_value":null,"min_value":null,"multi_value":false,"name":"Owned By","persona":"group","read_only":false,"required":false,"type":2,"type_name":"Integer","valid_values":[],"valid_values_name":[]},"owner_user_id":{"allow_undefined":false,"bulk_shared":false,"default_value":null,"description":null,"hidden":false,"key":"owner_user_id","max_value":null,"min_value":null,"multi_value":false,"name":"Owned By","persona":"user","read_only":false,"required":false,"type":2,"type_name":"Integer","valid_values":[],"valid_values_name":[]},"parent_id":{"allow_undefined":false,"bulk_shared":false,"default_value":null,"description":null,"hidden":false,"key":"parent_id","max_value":null,"min_value":null,"multi_value":false,"name":"Parent ID","persona":"node","read_only":false,"required":false,"type":2,"type_name":"Integer","valid_values":[],"valid_values_name":[]},"reserved":{"allow_undefined":false,"bulk_shared":false,"default_value":null,"description":null,"hidden":false,"key":"reserved","multi_value":false,"name":"Reserved","persona":"","read_only":false,"required":false,"type":5,"type_name":"Boolean","valid_values":[],"valid_values_name":[]},"reserved_date":{"allow_undefined":false,"bulk_shared":false,"default_value":null,"description":null,"hidden":false,"key":"reserved_date","multi_value":false,"name":"Reserved","persona":"","read_only":false,"required":false,"type":-7,"type_name":"Date","valid_values":[],"valid_values_name":[]},"reserved_user_id":{"allow_undefined":false,"bulk_shared":false,"default_value":null,"description":null,"hidden":false,"key":"reserved_user_id","max_value":null,"min_value":null,"multi_value":false,"name":"Reserved By","persona":"member","read_only":false,"required":false,"type":2,"type_name":"Integer","valid_values":[],"valid_values_name":[]},"type":{"allow_undefined":false,"bulk_shared":false,"default_value":null,"description":null,"hidden":false,"key":"type","max_value":null,"min_value":null,"multi_value":false,"name":"Type","persona":"","read_only":true,"required":false,"type":2,"type_name":"Integer","valid_values":[],"valid_values_name":[]},"type_name":{"allow_undefined":false,"bulk_shared":false,"default_value":null,"description":null,"hidden":false,"key":"type_name","max_length":null,"min_length":null,"multiline":false,"multilingual":false,"multi_value":false,"name":"Type","password":false,"persona":"","read_only":true,"required":false,"type":-1,"type_name":"String","valid_values":[],"valid_values_name":[]},"volume_id":{"allow_undefined":false,"bulk_shared":false,"default_value":null,"description":null,"hidden":false,"key":"volume_id","max_value":null,"min_value":null,"multi_value":false,"name":"VolumeID","persona":"node","read_only":false,"required":false,"type":2,"type_name":"Integer","valid_values":[],"valid_values_name":[]}},"definitions_base":["create_date","create_user_id","description","guid","icon","icon_large","id","modify_date","modify_user_id","name","owner_group_id","owner_user_id","parent_id","reserved","reserved_date","reserved_user_id","type","type_name","volume_id"],"definitions_order":["id","type","type_name","name","description","parent_id","volume_id","guid","create_date","create_user_id","modify_date","modify_user_id","owner_user_id","owner_group_id","reserved","reserved_date","reserved_user_id","icon","icon_large"],"type":141,"type_info":{"advanced_versioning":false,"container":true},"type_name":"Enterprise Workspace"};
+		//return {"addable_types":[{"icon":"/img/webdoc/folder.gif","type":0,"type_name":"Folder"},{"icon":"/img/tinyali.gif","type":1,"type_name":"Shortcut"},{"icon":"/img/webattribute/16category.gif","type":131,"type_name":"Category"},{"icon":"/img/webdoc/cd.gif","type":136,"type_name":"Compound Document"},{"icon":"/img/webdoc/url.gif","type":140,"type_name":"URL"},{"icon":"/img/webdoc/doc.gif","type":144,"type_name":"Document"},{"icon":"/img/channel/16channel.gif","type":207,"type_name":"Channel"},{"icon":"/img/otemail/emailfolder.gif","type":751,"type_name":"E-mail Folder"}],"available_actions":[{"parameterless":false,"read_only":true,"type":"browse","type_name":"Browse","webnode_signature":null},{"parameterless":false,"read_only":false,"type":"update","type_name":"Update","webnode_signature":null}],"available_roles":[{"type":"audit","type_name":"Audit"},{"type":"categories","type_name":"Categories"}],"data":{"create_date":"2014-08-19T06:12:54","create_user_id":1000,"description":"","description_multilingual":{"en_US":""},"guid":null,"icon":"/img/webdoc/icon_library.gif","icon_large":"/img/webdoc/icon_library_large.gif","id":2000,"modify_date":"2014-09-02T03:03:03","modify_user_id":1000,"name":"Enterprise","name_multilingual":{"en_US":"Enterprise"},"owner_group_id":1001,"owner_user_id":1000,"parent_id":-1,"reserved":false,"reserved_date":null,"reserved_user_id":0,"type":141,"type_name":"Enterprise Workspace","volume_id":2000},"definitions":{"create_date":{"allow_undefined":false,"bulk_shared":false,"default_value":null,"description":null,"hidden":false,"key":"create_date","multi_value":false,"name":"Created","persona":"","read_only":true,"required":false,"type":-7,"type_name":"Date","valid_values":[],"valid_values_name":[]},"create_user_id":{"allow_undefined":false,"bulk_shared":false,"default_value":null,"description":null,"hidden":false,"key":"create_user_id","max_value":null,"min_value":null,"multi_value":false,"name":"Created By","persona":"user","read_only":false,"required":false,"type":2,"type_name":"Integer","valid_values":[],"valid_values_name":[]},"description":{"allow_undefined":false,"bulk_shared":false,"default_value":null,"description":null,"hidden":false,"key":"description","max_length":null,"min_length":null,"multiline":true,"multilingual":true,"multi_value":false,"name":"Description","password":false,"persona":"","read_only":false,"required":false,"type":-1,"type_name":"String","valid_values":[],"valid_values_name":[]},"guid":{"allow_undefined":false,"bulk_shared":false,"default_value":null,"description":null,"hidden":false,"key":"guid","multi_value":false,"name":"GUID","persona":"","read_only":false,"required":false,"type":-95,"type_name":"GUID","valid_values":[],"valid_values_name":[]},"icon":{"allow_undefined":false,"bulk_shared":false,"default_value":null,"description":null,"hidden":false,"key":"icon","max_length":null,"min_length":null,"multiline":false,"multilingual":false,"multi_value":false,"name":"Icon","password":false,"persona":"","read_only":false,"required":false,"type":-1,"type_name":"String","valid_values":[],"valid_values_name":[]},"icon_large":{"allow_undefined":false,"bulk_shared":false,"default_value":null,"description":null,"hidden":false,"key":"icon_large","max_length":null,"min_length":null,"multiline":false,"multilingual":false,"multi_value":false,"name":"Large Icon","password":false,"persona":"","read_only":false,"required":false,"type":-1,"type_name":"String","valid_values":[],"valid_values_name":[]},"id":{"allow_undefined":false,"bulk_shared":false,"default_value":null,"description":null,"hidden":false,"key":"id","max_value":null,"min_value":null,"multi_value":false,"name":"ID","persona":"node","read_only":false,"required":false,"type":2,"type_name":"Integer","valid_values":[],"valid_values_name":[]},"modify_date":{"allow_undefined":false,"bulk_shared":false,"default_value":null,"description":null,"hidden":false,"key":"modify_date","multi_value":false,"name":"Modified","persona":"","read_only":true,"required":false,"type":-7,"type_name":"Date","valid_values":[],"valid_values_name":[]},"modify_user_id":{"allow_undefined":false,"bulk_shared":false,"default_value":null,"description":null,"hidden":false,"key":"modify_user_id","max_value":null,"min_value":null,"multi_value":false,"name":"Modified By","persona":"user","read_only":false,"required":false,"type":2,"type_name":"Integer","valid_values":[],"valid_values_name":[]},"name":{"allow_undefined":false,"bulk_shared":false,"default_value":null,"description":null,"hidden":false,"key":"name","max_length":null,"min_length":null,"multiline":false,"multilingual":true,"multi_value":false,"name":"Name","password":false,"persona":"","read_only":false,"required":false,"type":-1,"type_name":"String","valid_values":[],"valid_values_name":[]},"owner_group_id":{"allow_undefined":false,"bulk_shared":false,"default_value":null,"description":null,"hidden":false,"key":"owner_group_id","max_value":null,"min_value":null,"multi_value":false,"name":"Owned By","persona":"group","read_only":false,"required":false,"type":2,"type_name":"Integer","valid_values":[],"valid_values_name":[]},"owner_user_id":{"allow_undefined":false,"bulk_shared":false,"default_value":null,"description":null,"hidden":false,"key":"owner_user_id","max_value":null,"min_value":null,"multi_value":false,"name":"Owned By","persona":"user","read_only":false,"required":false,"type":2,"type_name":"Integer","valid_values":[],"valid_values_name":[]},"parent_id":{"allow_undefined":false,"bulk_shared":false,"default_value":null,"description":null,"hidden":false,"key":"parent_id","max_value":null,"min_value":null,"multi_value":false,"name":"Parent ID","persona":"node","read_only":false,"required":false,"type":2,"type_name":"Integer","valid_values":[],"valid_values_name":[]},"reserved":{"allow_undefined":false,"bulk_shared":false,"default_value":null,"description":null,"hidden":false,"key":"reserved","multi_value":false,"name":"Reserved","persona":"","read_only":false,"required":false,"type":5,"type_name":"Boolean","valid_values":[],"valid_values_name":[]},"reserved_date":{"allow_undefined":false,"bulk_shared":false,"default_value":null,"description":null,"hidden":false,"key":"reserved_date","multi_value":false,"name":"Reserved","persona":"","read_only":false,"required":false,"type":-7,"type_name":"Date","valid_values":[],"valid_values_name":[]},"reserved_user_id":{"allow_undefined":false,"bulk_shared":false,"default_value":null,"description":null,"hidden":false,"key":"reserved_user_id","max_value":null,"min_value":null,"multi_value":false,"name":"Reserved By","persona":"member","read_only":false,"required":false,"type":2,"type_name":"Integer","valid_values":[],"valid_values_name":[]},"type":{"allow_undefined":false,"bulk_shared":false,"default_value":null,"description":null,"hidden":false,"key":"type","max_value":null,"min_value":null,"multi_value":false,"name":"Type","persona":"","read_only":true,"required":false,"type":2,"type_name":"Integer","valid_values":[],"valid_values_name":[]},"type_name":{"allow_undefined":false,"bulk_shared":false,"default_value":null,"description":null,"hidden":false,"key":"type_name","max_length":null,"min_length":null,"multiline":false,"multilingual":false,"multi_value":false,"name":"Type","password":false,"persona":"","read_only":true,"required":false,"type":-1,"type_name":"String","valid_values":[],"valid_values_name":[]},"volume_id":{"allow_undefined":false,"bulk_shared":false,"default_value":null,"description":null,"hidden":false,"key":"volume_id","max_value":null,"min_value":null,"multi_value":false,"name":"VolumeID","persona":"node","read_only":false,"required":false,"type":2,"type_name":"Integer","valid_values":[],"valid_values_name":[]}},"definitions_base":["create_date","create_user_id","description","guid","icon","icon_large","id","modify_date","modify_user_id","name","owner_group_id","owner_user_id","parent_id","reserved","reserved_date","reserved_user_id","type","type_name","volume_id"],"definitions_order":["id","type","type_name","name","description","parent_id","volume_id","guid","create_date","create_user_id","modify_date","modify_user_id","owner_user_id","owner_group_id","reserved","reserved_date","reserved_user_id","icon","icon_large"],"type":141,"type_info":{"advanced_versioning":false,"container":true},"type_name":"Enterprise Workspace"};
 	};
 	
 	var getChildren = function (parentId) {
@@ -240,7 +145,121 @@ angular.module('csRepository').service('csLogin', function($modal) {
     0.1 - initial version September 2014 Mark Farrall
     --------------------------------------------------------------------------------  */
 	
-angular.module('tester', []);
+angular.module('browse', []);
+
+/*  --------------------------------------------------------------------------------
+    Version history
+    --------------------------------------------------------------------------------
+    0.1 - initial version September 2014 Mark Farrall
+    --------------------------------------------------------------------------------  */
+	
+angular.module('browse').controller('BrowseController', function($scope, $routeParams, $rootScope, $location, csRepository) {
+
+	// see if we've got an authenticated connection
+	if (!csRepository.authenticated) {
+		// todo authenticate
+		
+	}
+
+	// get the container node
+	var thisnode = $routeParams.id;
+	if (!thisnode) {
+		thisnode = $rootScope.startNode;
+	}
+
+	// get the details for the current container
+	$scope.container = csRepository.getNode(thisnode);
+	
+	// get the nodes for the current container
+	$scope.nodes = csRepository.getChildren(thisnode).data;
+
+	// handles the click event for nodes
+	$scope.openNode = function(type, id) {
+		switch(type) {
+			case 'Folder':
+				$location.path('browse/' + id);
+				break;
+			default:
+				// todo open this in the viewer
+				console.log('open document ' + id);
+				break;
+		}
+	};
+});
+
+/*  --------------------------------------------------------------------------------
+    Version history
+    --------------------------------------------------------------------------------
+    0.1 - initial version September 2014 Mark Farrall
+    --------------------------------------------------------------------------------  */
+	
+angular.module('browse').directive('objectIcon', function() {
+
+	return {
+		restrict: 'A',
+		replace: 'false',
+		link: function(scope, el, atts) {
+			var args = atts.objectIcon.split(',');
+
+			// append the object icon class
+			var classes = '';
+			switch(args[0]) {
+				case '141':
+					classes = 'fa-home';
+					break;
+				case '0':
+					classes = 'fa-folder-open';
+					break;
+				case '144':
+					classes = 'fa-file-pdf-o';
+					break;
+				default:
+					classes = 'fa-bars';
+					break;
+			}
+			
+			// combine the classes
+			if (args[1] == 'browse') {
+				classes = 'browse-icon fa ' + classes  + ' fa-2x';
+			}
+			else {
+				classes = 'browse-container-name-icon fa ' + classes  + ' fa-3x';
+			}
+			
+			// update the attributes
+			el.attr('class', classes);
+			el.removeAttr('browse-icon');
+		}
+	};
+
+});
+
+/* glyphicons version
+
+			var classes = 'browse-icon glyphicon ';
+			switch(atts.objectIcon.toString()) {
+				case '141':
+					classes += 'glyphicon-home';
+					break;
+				case '0':
+					classes += 'glyphicon-folder-close';
+					break;
+				case '144':
+					classes += 'glyphicon-list-alt';
+					break;
+				default:
+					classes += 'glyphicon-cog';
+					break;
+			}
+
+*/
+/*  --------------------------------------------------------------------------------
+    Version history
+    --------------------------------------------------------------------------------
+    0.1 - initial version September 2014 Mark Farrall
+    --------------------------------------------------------------------------------  */
+	
+angular.module('sandpit', []);
 
 /* --------------------------------------------------------------------------------
  Version history
@@ -248,7 +267,7 @@ angular.module('tester', []);
  0.1 - initial version September 2014 Mark Farrall
  -------------------------------------------------------------------------------- */
 	
-angular.module('tester').controller('TesterController', function($scope, csLogin) {
+angular.module('sandpit').controller('SandpitController', function($scope, csLogin) {
 
 	$scope.message = 'Budgie';
 	
@@ -274,8 +293,9 @@ angular.module('csDumb', [
 	'csRepository',
 	'ui.bootstrap',
 	'ui.bootstrap.modal',
-	// remove the tester
-	'tester',
+	'restangular',
+	// remove the sandpit
+	'sandpit',
 	'browse'
 ]);
 
@@ -292,7 +312,7 @@ angular.module('csDumb').config(['$routeProvider', function($routeProvider, $roo
 	$routeProvider.
 		when('/browse', { templateUrl: 'views/browse/browse.html', controller: 'BrowseController' }).
 		when('/browse/:id', { templateUrl: 'views/browse/browse.html', controller: 'BrowseController' }).
-		// todo remove the tester
-		when('/tester', { templateUrl: 'views/tester/tester.html', controller: 'TesterController' }).
+		// todo remove the sandpit
+		when('/sandpit', { templateUrl: 'views/sandpit/sandpit.html', controller: 'SandpitController' }).
 		otherwise({ redirectTo: '/browse' });
 }]);

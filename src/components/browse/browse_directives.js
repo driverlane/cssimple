@@ -4,27 +4,40 @@
     0.1 - initial version September 2014 Mark Farrall
     --------------------------------------------------------------------------------  */
 	
-angular.module('browse').directive('browseIcon', function() {
+angular.module('browse').directive('objectIcon', function() {
 
 	return {
 		restrict: 'A',
 		replace: 'false',
 		link: function(scope, el, atts) {
-			var classes = 'browse-icon fa ';
-			switch(atts.browseIcon.toString()) {
+			var args = atts.objectIcon.split(',');
+
+			// append the object icon class
+			var classes = '';
+			switch(args[0]) {
 				case '141':
-					classes += 'fa-home fa-3x';
+					classes = 'fa-home';
 					break;
 				case '0':
-					classes += 'fa-folder-open fa-3x';
+					classes = 'fa-folder-open';
 					break;
 				case '144':
-					classes += 'fa-file-pdf-o fa-3x';
+					classes = 'fa-file-pdf-o';
 					break;
 				default:
-					classes += 'fa-bars fa-3x';
+					classes = 'fa-bars';
 					break;
 			}
+			
+			// combine the classes
+			if (args[1] == 'browse') {
+				classes = 'browse-icon fa ' + classes  + ' fa-2x';
+			}
+			else {
+				classes = 'browse-container-name-icon fa ' + classes  + ' fa-3x';
+			}
+			
+			// update the attributes
 			el.attr('class', classes);
 			el.removeAttr('browse-icon');
 		}
@@ -35,7 +48,7 @@ angular.module('browse').directive('browseIcon', function() {
 /* glyphicons version
 
 			var classes = 'browse-icon glyphicon ';
-			switch(atts.browseIcon.toString()) {
+			switch(atts.objectIcon.toString()) {
 				case '141':
 					classes += 'glyphicon-home';
 					break;

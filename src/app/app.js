@@ -9,6 +9,7 @@ angular.module('csDumb', [
 	'csRepository',
 	'ui.bootstrap',
 	'ui.bootstrap.modal',
+	'restangular',
 	// remove the sandpit
 	'sandpit',
 	'browse'
