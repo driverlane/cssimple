@@ -1,16 +1,22 @@
 <div class="container">
+	<div>
+		<ol class="breadcrumb">
+			<li ng-repeat="crumb in crumbs">
+				<a href="#/browse/{{crumb.id}}">{{crumb.name}}</a>
+			</li>
+		</ol>
+	</div>
 	<div class="browse-container">
-		<i object-icon="{{container.data.type}},main"></i>
+		<i class="browse-container-name-icon fa fa-3x {{getIcon(container.data)}}"></i>
 		<div class="browse-container-name">{{container.data.name}}</div>
 	</div>
 	<div id="itemList">
 		<ul class="browse-panel">
 			<li ng-repeat="node in nodes" class="browse-item" ng-click="openNode(node.type_name, node.id)">
-				<i object-icon="{{node.type}},browse"></i>
+				<i class="browse-icon fa fa-2x {{getIcon(node)}}"></i>
 				<div class="browse-details">
 					<span class="browse-name">{{node.name}}</span><br>
-					<!-- todo convert this to a localised date -->
-					<span class="browse-details">Modified: {{node.modify_date}}</span>
+					<span class="browse-details">Modified: {{setDate(node.modify_date)}}</span>
 				</div>
 			</li>
 		</ul>

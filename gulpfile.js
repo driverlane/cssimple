@@ -265,10 +265,7 @@ gulp.task('watchiis', function() {
 
 // copies all unminified resources to dist and starts a local server
 gulp.task('copydev', function() {
-	runsequence(
-		['lint','unit'],
-		['views','cssnomin','img','jsnomin','root']
-	);
+	runsequence('views','cssnomin','img','jsnomin','root');
 });
 
 gulp.task('default', function() {
