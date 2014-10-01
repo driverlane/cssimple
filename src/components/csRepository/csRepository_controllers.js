@@ -1,7 +1,7 @@
 /*  --------------------------------------------------------------------------------
     Version history
     --------------------------------------------------------------------------------
-    0.1 - initial version September 2014 Mark Farrall
+    0.1.0 - initial version October 2014 Mark Farrall
     --------------------------------------------------------------------------------  */
 	
 angular.module('csRepository').controller('LoginController', function($scope, $modalInstance, $timeout) {

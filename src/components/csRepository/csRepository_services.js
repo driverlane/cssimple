@@ -1,16 +1,27 @@
 /*  --------------------------------------------------------------------------------
     Version history
     --------------------------------------------------------------------------------
-    0.1 - initial version September 2014 Mark Farrall
+    0.1.0 - initial version October 2014 Mark Farrall
     --------------------------------------------------------------------------------  */
 	
-angular.module('csRepository').factory('csRepository', function($q, Restangular) {
+angular.module('csRepository').factory('csRepository', function($rootScope, $q, Restangular) {
 
 	/* --- variables --- */
-	var apiPath = 'otcs/cs.exe/api/v1/';
-	var restangular = configureConnection('/otcs/cs.exe/api/v1');
-	var username = 'mark.farrall';
-	var password = 'p@ssw0rd';
+	var apiPath = '/otcs/cs.exe/api/v1/';
+	if (typeof $rootScope.apiPath !== 'undefined') { apiPath = $rootScope.apiPath; }
+	var ssoPath = '/otcs/cs.exe';
+	if (typeof $rootScope.ssoPath !== 'undefined') { ssoPath = $rootScope.ssoPath; }
+	var ssoEnabled = true;
+	if (typeof $rootScope.ssoEnabled !== 'undefined') { ssoEnabled = $rootScope.ssoEnabled; }
+	var username = '';
+	if (typeof $rootScope.username !== 'undefined') { username = $rootScope.username; }
+	var password = '';
+	if (typeof $rootScope.password !== 'undefined') { password = $rootScope.password; }
+
+	// internal variables
+	var restangular = configureConnection(apiPath);
+	var ticket = '';
+	var ticketExpiry;
 
 	/* --- functions --- */
 	
@@ -52,7 +63,7 @@ angular.module('csRepository').factory('csRepository', function($q, Restangular)
 		return deferred.promise;
 	}
 		
-	// the the definition for a node
+	// get the definition for a node
 	var getNode = function(nodeId) {
 		var deferred = $q.defer();
 		
@@ -84,30 +95,41 @@ angular.module('csRepository').factory('csRepository', function($q, Restangular)
 		return deferred.promise;
     };
 	
-	// the the definition for a node
-	var getBreadcrumbs = function(nodeId) {
+	// get the ancestors for a node
+	var getAncestors = function(start) {
 		var deferred = $q.defer();
+		var crumbs = [];
+		crumbs.push({id: start.data.id, name: start.data.name});
 		
-		checkTicket()
-		.then(function() {
-			var crumbs = [];
-			crumbs.push({id: 2000, name:"Enterprise"});
-			crumbs.push({id: nodeId, name:"Other name"});
-			
-			deferred.resolve(crumbs);
-		});
-		// todo handle a ticket error
+		if (start.data.parent_id != '-1'){
+			checkTicket()
+			.then(function() {
+				
+				getNode(start.data.parent_id)
+				.then(function(node) {
+
+					//if (node.data.parent_id == '-1') {
+						crumbs.push({id: node.data.id, name: node.data.name});
+						deferred.resolve(crumbs.reverse());
+
+				});
+				
+			});
+			// todo handle a ticket error
+		}
+		else {
+			deferred.resolve(crumbs.reverse());
+		}
 		
 		return deferred.promise;
 	};
 	
-
 	// return the public functions
 	return {
 		init: init,
 		getNode: getNode,
 		getChildren: getChildren,
-		getBreadcrumbs: getBreadcrumbs
+		getAncestors: getAncestors
 	};
 	
 });

@@ -1,20 +1,17 @@
-/* --------------------------------------------------------------------------------
- Version history
- --------------------------------------------------------------------------------
- 0.1 - initial version September 2014 Mark Farrall
- -------------------------------------------------------------------------------- */
-	
-angular.module('sandpit').controller('SandpitController', function($scope, csLogin) {
+
+angular.module('sandpit').controller('SandpitController', function($scope, $modal) {
 
 	$scope.message = 'Budgie';
 	
-	var login = csLogin.showLogin();
+	
+	
+	/*var login = csLogin.showLogin();
 	
 	login.result.then(function(result) {
 		$scope.message = result;
 	},
 	function() {
 		$scope.message = 'dismissed';	
-	});
+	});*/
 	
 });

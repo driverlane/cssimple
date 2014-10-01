@@ -1,33 +1,77 @@
 /*  --------------------------------------------------------------------------------
     Version history
     --------------------------------------------------------------------------------
-    0.1 - initial version September 2014 Mark Farrall
+    0.1.0 - initial version October 2014 Mark Farrall
     --------------------------------------------------------------------------------  */
 	
+/* Dependencies
+
+	The browse module relies on the following Angular modules:
+	
+		* ngRoute module, from the core angular library
+			bower install angular-route or https://github.com/angular/angular.js
+		* csRepository module, from the csDumb client
+			https://github.com/markfarrall/csdumb
+			
+	The browse module relies on the following other components:
+	
+		* Bootstrap - css only version for display
+			bower install bootstrap-css-only or https://github.com/fyockm/bootstrap-css-only
+		* Font Awesome - for display of icons
+			bower install font-awesome or http://fortawesome.github.io/Font-Awesome/
+	
+*/
+
+/* Configuration
+
+	The module will check the $rootScope when loaded for configuration options. If they are present
+	it will use them. If not it will use the default, if there is one, or request the values from
+	the user. Configuration options are:
+	
+	* startNode - the ID of the fist folder to display - defaults to 2000, i.e. Enterprise workspace
+	
+*/
+
 angular.module('browse', []);
 
 /*  --------------------------------------------------------------------------------
     Version history
     --------------------------------------------------------------------------------
-    0.1 - initial version September 2014 Mark Farrall
+    0.1.0 - initial version October 2014 Mark Farrall
     --------------------------------------------------------------------------------  */
 	
-angular.module('browse').controller('BrowseController', function($scope, $routeParams, $rootScope, $location, csRepository) {
+angular.module('browse').controller('BrowseController', function($rootScope, $scope, $routeParams, $location, csRepository, $modal) {
 
 	/* --- variables --- */
+	var startNode = 2000;
+	if (typeof $rootScope.startNode !== 'undefined') { startNode = $rootScope.startNode; }
 	$scope.containerId = $routeParams.id;
+	$scope.docSource = '/kiosk/';
 
 	/* --- functions --- */
 
 	// handles the click event for nodes
-	$scope.openNode = function(type, id) {
-		switch(type) {
-			case 'Folder':
-				$location.path('browse/' + id);
+	$scope.openNode = function(node) {
+		switch(node.type.toString()) {
+			case '0':
+				$location.path('browse/' + node.id);
+				break;
+			case '144':
+			
+				// todo open this in the viewer
+				//$scope.docSource = "/otcs/cs.exe/46099/Resonate_KT_%2D_WebReports_Workflow_Extensions_10%2E0%2E1_Release_Notes.pdf?func=doc.Fetch&nodeid=46099";
+				$scope.docSource = '/otcs/cs.exe/fetch/2000/Resonate_KT_-_WebReports_Workflow_Extensions_10.0.1_Release_Notes.pdf?nodeid=46099&vernum=-2';
+				$scope.$watch('docSource', function() {
+					$modal.open({
+						templateUrl: './views/browse/docViewer.html',
+						controller: 'BrowseController',
+						size: 'lg'
+					});
+				});
+				
 				break;
 			default:
-				// todo open this in the viewer
-				console.log('open document ' + id);
+				console.log('open not supported yet');
 				break;
 		}
 	};
@@ -54,25 +98,31 @@ angular.module('browse').controller('BrowseController', function($scope, $routeP
 		return newDate.toDateString();
 	};
 	
+	// closes the docViewer dialog
+	$scope.docViewerClose = function () {
+		$modal.close('closed');
+	};
+
 	/* --- controller logic --- */
 	
 	// check the id, if none use default
 	if (!$scope.containerId) {
-		$scope.containerId = $rootScope.startNode;
+		$scope.containerId = startNode;
 	}
 
 	// get the details for the current id
 	csRepository.getNode($scope.containerId)
 	.then(function(data) {
 		$scope.container = data;
+		
+		// get the breadcrumbs for the current id
+		csRepository.getAncestors(data)
+		.then(function(crumbs) {
+			$scope.crumbs = crumbs;
+		});
+		
 	});
 	
-	// get the children for the current id
-	csRepository.getBreadcrumbs($scope.containerId)
-	.then(function(data) {
-		$scope.crumbs = data;
-	});
-
 	// get the children for the current id
 	csRepository.getChildren($scope.containerId)
 	.then(function(data) {
@@ -81,30 +131,159 @@ angular.module('browse').controller('BrowseController', function($scope, $routeP
 
 });
 
-/*  --------------------------------------------------------------------------------
-    Version history
-    --------------------------------------------------------------------------------
-    0.1 - initial version September 2014 Mark Farrall
-    --------------------------------------------------------------------------------  */
+angular.module('browse').controller('DocViewerController', function($scope, $modalInstance) {
+
+	$scope.login = function () {
 	
+		$timeout(function() {
+			$modalInstance.close('authenticated');
+		}, 1000);
+	};
+	
+});
 
 /*  --------------------------------------------------------------------------------
     Version history
     --------------------------------------------------------------------------------
-    0.1 - initial version September 2014 Mark Farrall
+    0.1.0 - initial version October 2014 Mark Farrall
     --------------------------------------------------------------------------------  */
 	
+angular.module('browse').controller('BrowseController', function($rootScope, $scope, $routeParams, $location, csRepository, $modal) {
+
+	/* --- variables --- */
+	var startNode = 2000;
+	if (typeof $rootScope.startNode !== 'undefined') { startNode = $rootScope.startNode; }
+	$scope.containerId = $routeParams.id;
+	$scope.docSource = '/kiosk/';
+
+	/* --- functions --- */
+
+	// handles the click event for nodes
+	$scope.openNode = function(node) {
+		switch(node.type.toString()) {
+			case '0':
+				$location.path('browse/' + node.id);
+				break;
+			case '144':
+			
+				// todo open this in the viewer
+				//$scope.docSource = "/otcs/cs.exe/46099/Resonate_KT_%2D_WebReports_Workflow_Extensions_10%2E0%2E1_Release_Notes.pdf?func=doc.Fetch&nodeid=46099";
+				$scope.docSource = '/otcs/cs.exe/fetch/2000/Resonate_KT_-_WebReports_Workflow_Extensions_10.0.1_Release_Notes.pdf?nodeid=46099&vernum=-2';
+				$scope.$watch('docSource', function() {
+					$modal.open({
+						templateUrl: './views/browse/docViewer.html',
+						controller: 'BrowseController',
+						size: 'lg'
+					});
+				});
+				
+				break;
+			default:
+				console.log('open not supported yet');
+				break;
+		}
+	};
+	
+	// returns the icon for an item type
+	$scope.getIcon = function(node) {
+		if (node) {
+			switch(node.type.toString()) {
+				case '141':
+					return 'fa-home';
+				case '0':
+					return 'fa-folder-open';
+				case '144':
+					return 'fa-file-pdf-o';
+				default:
+					return 'fa-bars';
+			}
+		}
+	};
+	
+	// returns a basic date
+	$scope.setDate = function(date) {
+		var newDate = new Date(date);
+		return newDate.toDateString();
+	};
+	
+	// closes the docViewer dialog
+	$scope.docViewerClose = function () {
+		$modal.close('closed');
+	};
+
+	/* --- controller logic --- */
+	
+	// check the id, if none use default
+	if (!$scope.containerId) {
+		$scope.containerId = startNode;
+	}
+
+	// get the details for the current id
+	csRepository.getNode($scope.containerId)
+	.then(function(data) {
+		$scope.container = data;
+		
+		// get the breadcrumbs for the current id
+		csRepository.getAncestors(data)
+		.then(function(crumbs) {
+			$scope.crumbs = crumbs;
+		});
+		
+	});
+	
+	// get the children for the current id
+	csRepository.getChildren($scope.containerId)
+	.then(function(data) {
+		$scope.nodes = data.data;
+	});
+
+});
+
+angular.module('browse').controller('DocViewerController', function($scope, $modalInstance) {
+
+	$scope.login = function () {
+	
+		$timeout(function() {
+			$modalInstance.close('authenticated');
+		}, 1000);
+	};
+	
+});
 
 /*  --------------------------------------------------------------------------------
     Version history
     --------------------------------------------------------------------------------
-    0.1 - initial version September 2014 Mark Farrall
+    0.1.0 - initial version October 2014 Mark Farrall
     --------------------------------------------------------------------------------  */
 	
 /* Dependencies
 
-	The csLogin service relies on ui.bootstrap.modal module (from the angular-bootstrap library)
+	The csRepository module relies on the following: 
+	
+		* ui.bootstrap.modal module, from the angular-bootstrap library
+			bower install angular-bootstrap or https://github.com/angular-ui/bootstrap
+		* restangular
+			bower install restangular or https://github.com/mgonto/restangular
+		
+	The csRepository module relies on the following other components:
+	
+		* Bootstrap - css only version for display
+			bower install bootstrap-css-only or https://github.com/fyockm/bootstrap-css-only
+	
+*/
 
+/* Configuration
+
+	The module will check the $rootScope when loaded for configuration options. If they are present
+	it will use them. If not it will use the default, if there is one, or request the values from
+	the user. Configuration options are:
+	
+	* apiPath - the path to the REST API - defaults to '/otcs/cs.exe/api/v1/'
+	* ssoPath - the path to a single sign on URL for Content Server - defaults to '/otcs/cs.exe'
+	* ssoEnabled - whether to try and retrieve the LLCookie ticket from the ssoPath - defaults to true
+	* username - the username for system login - no default
+	* password - the password for system login - no default
+	
 */
 	
 angular.module('csRepository', []);
@@ -112,7 +291,7 @@ angular.module('csRepository', []);
 /*  --------------------------------------------------------------------------------
     Version history
     --------------------------------------------------------------------------------
-    0.1 - initial version September 2014 Mark Farrall
+    0.1.0 - initial version October 2014 Mark Farrall
     --------------------------------------------------------------------------------  */
 	
 angular.module('csRepository').controller('LoginController', function($scope, $modalInstance, $timeout) {
@@ -174,16 +353,27 @@ angular.module('csRepository').controller('LoginController', function($scope, $m
 /*  --------------------------------------------------------------------------------
     Version history
     --------------------------------------------------------------------------------
-    0.1 - initial version September 2014 Mark Farrall
+    0.1.0 - initial version October 2014 Mark Farrall
     --------------------------------------------------------------------------------  */
 	
-angular.module('csRepository').factory('csRepository', function($q, Restangular) {
+angular.module('csRepository').factory('csRepository', function($rootScope, $q, Restangular) {
 
 	/* --- variables --- */
-	var apiPath = 'otcs/cs.exe/api/v1/';
-	var restangular = configureConnection('/otcs/cs.exe/api/v1');
-	var username = 'mark.farrall';
-	var password = 'p@ssw0rd';
+	var apiPath = '/otcs/cs.exe/api/v1/';
+	if (typeof $rootScope.apiPath !== 'undefined') { apiPath = $rootScope.apiPath; }
+	var ssoPath = '/otcs/cs.exe';
+	if (typeof $rootScope.ssoPath !== 'undefined') { ssoPath = $rootScope.ssoPath; }
+	var ssoEnabled = true;
+	if (typeof $rootScope.ssoEnabled !== 'undefined') { ssoEnabled = $rootScope.ssoEnabled; }
+	var username = '';
+	if (typeof $rootScope.username !== 'undefined') { username = $rootScope.username; }
+	var password = '';
+	if (typeof $rootScope.password !== 'undefined') { password = $rootScope.password; }
+
+	// internal variables
+	var restangular = configureConnection(apiPath);
+	var ticket = '';
+	var ticketExpiry;
 
 	/* --- functions --- */
 	
@@ -225,7 +415,7 @@ angular.module('csRepository').factory('csRepository', function($q, Restangular)
 		return deferred.promise;
 	}
 		
-	// the the definition for a node
+	// get the definition for a node
 	var getNode = function(nodeId) {
 		var deferred = $q.defer();
 		
@@ -257,30 +447,41 @@ angular.module('csRepository').factory('csRepository', function($q, Restangular)
 		return deferred.promise;
     };
 	
-	// the the definition for a node
-	var getBreadcrumbs = function(nodeId) {
+	// get the ancestors for a node
+	var getAncestors = function(start) {
 		var deferred = $q.defer();
+		var crumbs = [];
+		crumbs.push({id: start.data.id, name: start.data.name});
 		
-		checkTicket()
-		.then(function() {
-			var crumbs = [];
-			crumbs.push({id: 2000, name:"Enterprise"});
-			crumbs.push({id: nodeId, name:"Other name"});
-			
-			deferred.resolve(crumbs);
-		});
-		// todo handle a ticket error
+		if (start.data.parent_id != '-1'){
+			checkTicket()
+			.then(function() {
+				
+				getNode(start.data.parent_id)
+				.then(function(node) {
+
+					//if (node.data.parent_id == '-1') {
+						crumbs.push({id: node.data.id, name: node.data.name});
+						deferred.resolve(crumbs.reverse());
+
+				});
+				
+			});
+			// todo handle a ticket error
+		}
+		else {
+			deferred.resolve(crumbs.reverse());
+		}
 		
 		return deferred.promise;
 	};
 	
-
 	// return the public functions
 	return {
 		init: init,
 		getNode: getNode,
 		getChildren: getChildren,
-		getBreadcrumbs: getBreadcrumbs
+		getAncestors: getAncestors
 	};
 	
 });
@@ -303,40 +504,63 @@ angular.module('csRepository').service('csLogin', function($modal) {
 });
 
 
-/*  --------------------------------------------------------------------------------
-    Version history
-    --------------------------------------------------------------------------------
-    0.1 - initial version September 2014 Mark Farrall
-    --------------------------------------------------------------------------------  */
-	
 angular.module('sandpit', []);
 
-/* --------------------------------------------------------------------------------
- Version history
- --------------------------------------------------------------------------------
- 0.1 - initial version September 2014 Mark Farrall
- -------------------------------------------------------------------------------- */
-	
-angular.module('sandpit').controller('SandpitController', function($scope, csLogin) {
+
+angular.module('sandpit').controller('SandpitController', function($scope, $modal) {
 
 	$scope.message = 'Budgie';
 	
-	var login = csLogin.showLogin();
+	
+	
+	/*var login = csLogin.showLogin();
 	
 	login.result.then(function(result) {
 		$scope.message = result;
 	},
 	function() {
 		$scope.message = 'dismissed';	
-	});
+	});*/
 	
 });
+
+
+
+
+angular.module('sandpit').service('docViewer', function($modal) {
+
+	var showDocViewer = function() {
+		return $modal.open({
+			templateUrl: './views/browse/docViewer.html',
+			controller: 'BrowseController',
+			size: 'lg'
+		});
+	};
+	
+	return {
+		showLogin: loginDialog
+	};
+	
+});
+
 
 /*  --------------------------------------------------------------------------------
     Version history
     --------------------------------------------------------------------------------
-    0.1 - initial version September 2014 Mark Farrall
+    0.1.0 - initial version October 2014 Mark Farrall
     --------------------------------------------------------------------------------  */
+
+/* Dependencies
+
+	This module is just a wrapper for the other modules. Dependencies can be seen below.	
+	
+*/
+
+/* Configuration
+
+	There is no configuration for this wrapper, some configuration items for other modules is set below.
+	
+*/
 
 angular.module('csDumb', [
 	'ngRoute',
@@ -349,12 +573,16 @@ angular.module('csDumb', [
 	'browse'
 ]);
 
-// globals
-// todo - work out whether these should be moved
+// config
 angular.module('csDumb').run(function($rootScope) {
-	$rootScope.singleSignonPath = '/otcs/cs.exe';
-	$rootScope.apiPath = '/otcs/cs.exe/api/v1';
+
+	// config for the browse module
 	$rootScope.startNode = 2000;
+	
+	// config for the csRepository module
+	$rootScope.ssoEnabled = false;
+	$rootScope.username = 'mark.farrall';
+	$rootScope.password = 'p@ssw0rd';
 });
 
 angular.module('csDumb').config(['$routeProvider', function($routeProvider, $rootScope) {

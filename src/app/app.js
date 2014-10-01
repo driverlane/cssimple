@@ -1,8 +1,20 @@
 /*  --------------------------------------------------------------------------------
     Version history
     --------------------------------------------------------------------------------
-    0.1 - initial version September 2014 Mark Farrall
+    0.1.0 - initial version October 2014 Mark Farrall
     --------------------------------------------------------------------------------  */
+
+/* Dependencies
+
+	This module is just a wrapper for the other modules. Dependencies can be seen below.	
+	
+*/
+
+/* Configuration
+
+	There is no configuration for this wrapper, some configuration items for other modules is set below.
+	
+*/
 
 angular.module('csDumb', [
 	'ngRoute',
@@ -15,12 +27,16 @@ angular.module('csDumb', [
 	'browse'
 ]);
 
-// globals
-// todo - work out whether these should be moved
+// config
 angular.module('csDumb').run(function($rootScope) {
-	$rootScope.singleSignonPath = '/otcs/cs.exe';
-	$rootScope.apiPath = '/otcs/cs.exe/api/v1';
+
+	// config for the browse module
 	$rootScope.startNode = 2000;
+	
+	// config for the csRepository module
+	$rootScope.ssoEnabled = false;
+	$rootScope.username = 'mark.farrall';
+	$rootScope.password = 'p@ssw0rd';
 });
 
 angular.module('csDumb').config(['$routeProvider', function($routeProvider, $rootScope) {
