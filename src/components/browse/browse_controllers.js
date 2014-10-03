@@ -4,39 +4,37 @@
     0.1.0 - initial version October 2014 Mark Farrall
     --------------------------------------------------------------------------------  */
 	
-angular.module('browse').controller('BrowseController', function($rootScope, $scope, $routeParams, $location, csRepository, $modal) {
+angular.module('browse').controller('BrowseController', function($rootScope, $scope, $routeParams, $location, csApi, viewer) {
 
 	/* --- variables --- */
-	var startNode = 2000;
-	if (typeof $rootScope.startNode !== 'undefined') { startNode = $rootScope.startNode; }
-	$scope.containerId = $routeParams.id;
-	$scope.docSource = '/kiosk/';
+	var browseConfig = {};
+	browseConfig.startNode = 2000;
+	browseConfig.viewableTypes = [144];
 
 	/* --- functions --- */
 
 	// handles the click event for nodes
 	$scope.openNode = function(node) {
-		switch(node.type.toString()) {
-			case '0':
-				$location.path('browse/' + node.id);
-				break;
-			case '144':
-			
-				// todo open this in the viewer
-				//$scope.docSource = "/otcs/cs.exe/46099/Resonate_KT_%2D_WebReports_Workflow_Extensions_10%2E0%2E1_Release_Notes.pdf?func=doc.Fetch&nodeid=46099";
-				$scope.docSource = '/otcs/cs.exe/fetch/2000/Resonate_KT_-_WebReports_Workflow_Extensions_10.0.1_Release_Notes.pdf?nodeid=46099&vernum=-2';
-				$scope.$watch('docSource', function() {
-					$modal.open({
-						templateUrl: './views/browse/docViewer.html',
-						controller: 'BrowseController',
-						size: 'lg'
-					});
-				});
-				
-				break;
-			default:
+	
+		// open any container objects
+		if (node.container) {
+			$location.path('browse/' + node.id);
+			return;
+		}
+		else {
+		
+			// send it to the viewer if it's a supported type
+			if (browseConfig.viewableTypes.indexOf(node.type) >= 0) {
+				// todo 1 get the source from the node object
+				var scope = '/otcs/cs.exe/46099/Resonate_KT_%2D_WebReports_Workflow_Extensions_10%2E0%2E1_Release_Notes.pdf?func=doc.Fetch&nodeid=46099';
+				viewer.showViewer(scope);
+				return;
+			}
+			// otherwise show the properties
+			else {
+				// todo last create a properties viewer
 				console.log('open not supported yet');
-				break;
+			}
 		}
 	};
 	
@@ -49,6 +47,7 @@ angular.module('browse').controller('BrowseController', function($rootScope, $sc
 				case '0':
 					return 'fa-folder-open';
 				case '144':
+					// todo last support different mime types
 					return 'fa-file-pdf-o';
 				default:
 					return 'fa-bars';
@@ -62,46 +61,59 @@ angular.module('browse').controller('BrowseController', function($rootScope, $sc
 		return newDate.toDateString();
 	};
 	
-	// closes the docViewer dialog
-	$scope.docViewerClose = function () {
-		$modal.close('closed');
-	};
-
-	/* --- controller logic --- */
+	// loads the page once there's a connection
+	var loadPage = function() {
 	
-	// check the id, if none use default
-	if (!$scope.containerId) {
-		$scope.containerId = startNode;
-	}
-
-	// get the details for the current id
-	csRepository.getNode($scope.containerId)
-	.then(function(data) {
-		$scope.container = data;
-		
-		// get the breadcrumbs for the current id
-		csRepository.getAncestors(data)
-		.then(function(crumbs) {
-			$scope.crumbs = crumbs;
+		// get the details for the current id
+		csApi.getNode($scope.containerId)
+		.then(function(data) {
+			$scope.container = data;
+			
+			// get the breadcrumbs for the current id
+			csApi.getAncestors(data)
+			.then(function(crumbs) {
+				$scope.crumbs = crumbs;
+			});
+			
 		});
 		
-	});
+		// get the children for the current id
+		csApi.getChildren($scope.containerId)
+		.then(function(data) {
+			$scope.nodes = data.data;
+		});
+		
+	};
 	
-	// get the children for the current id
-	csRepository.getChildren($scope.containerId)
-	.then(function(data) {
-		$scope.nodes = data.data;
-	});
+	/* --- controller initialisation --- */
+	
+	// see if there's any config in the rootScope
+	if (typeof $rootScope.browseConfig !== 'undefined') {
+		if (typeof $rootScope.browseConfig.startNode !== 'undefined')
+			browseConfig.startNode = $rootScope.browseConfig.startNode;
+		if (typeof $rootScope.browseConfig.viewableTypes !== 'undefined')
+			browseConfig.viewableTypes = $rootScope.browseConfig.viewableTypes;
+		if (typeof $rootScope.browseConfig.browseableMimeTypes !== 'undefined')
+			browseConfig.browseableMimeTypes = $rootScope.browseConfig.browseableMimeTypes;
+	}
+	
+	// get the current id, if none use default
+	$scope.containerId = $routeParams.id;
+	if (!$scope.containerId) {
+		$scope.containerId = browseConfig.startNode;
+	}
+
+	// load the page
+	loadPage();
 
 });
 
-angular.module('browse').controller('DocViewerController', function($scope, $modalInstance) {
+angular.module('browse').controller('ViewerController', function($scope, $modalInstance, source) {
 
-	$scope.login = function () {
-	
-		$timeout(function() {
-			$modalInstance.close('authenticated');
-		}, 1000);
+	$scope.source = (angular.isDefined(source)) ? source : './views/404.html';
+
+	$scope.close = function () {
+		$modalInstance.close();
 	};
 	
 });

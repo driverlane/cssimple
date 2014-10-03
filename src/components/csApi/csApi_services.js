@@ -4,50 +4,34 @@
     0.1.0 - initial version October 2014 Mark Farrall
     --------------------------------------------------------------------------------  */
 	
-angular.module('csRepository').factory('csRepository', function($rootScope, $q, Restangular) {
+angular.module('csApi').factory('csApi', function($rootScope, $q, Restangular, csLogin) {
 
 	/* --- variables --- */
-	var apiPath = '/otcs/cs.exe/api/v1/';
-	if (typeof $rootScope.apiPath !== 'undefined') { apiPath = $rootScope.apiPath; }
-	var ssoPath = '/otcs/cs.exe';
-	if (typeof $rootScope.ssoPath !== 'undefined') { ssoPath = $rootScope.ssoPath; }
-	var ssoEnabled = true;
-	if (typeof $rootScope.ssoEnabled !== 'undefined') { ssoEnabled = $rootScope.ssoEnabled; }
-	var username = '';
-	if (typeof $rootScope.username !== 'undefined') { username = $rootScope.username; }
-	var password = '';
-	if (typeof $rootScope.password !== 'undefined') { password = $rootScope.password; }
-
-	// internal variables
-	var restangular = configureConnection(apiPath);
-	var ticket = '';
-	var ticketExpiry;
-
-	/* --- functions --- */
-	
-	// initialise the connection details
-	var init = function() {
-		username = 'mark.farrall';
-		password = 'p@ssw0rd';
+	var apiConfig = {
+		apiPath: '/otcs/cs.exe/api/v1/',
+		ssoEnabled: true,
+		username: 'a',
+		password: 'a'
 	};
 	
-	// configure restangular
-	function configureConnection(baseUrl, ticket) {
+	/* --- functions --- */
+	
+	// configures restangular
+	var configureConnection = function (baseUrl, ticket) {
 		return Restangular.withConfig(function(Configurer) {
-			Configurer.setBaseUrl('/otcs/cs.exe/api/v1');
+			Configurer.setBaseUrl(baseUrl);
 			if (ticket !== '') {
 				Configurer.setDefaultHeaders({otcsticket: ticket});
 			}
+			// todo 6 setup JSONP access
 		});
-	}
+	};
 	
-	// get a ticket for a specific username/password
-	function checkTicket() {
+	// tries to get a ticket from the API
+	var userLogin = function (username, password) {
 		var deferred = $q.defer();
-
-		// todo incorporate sso
 		
-		// todo cache the ticket/check expiry
+		restangular = configureConnection(apiConfig.apiPath);
 		restangular.one('auth').customPOST(
 			{},
 			'',
@@ -55,14 +39,51 @@ angular.module('csRepository').factory('csRepository', function($rootScope, $q, 
 			{ContentType: 'application/x-www-form-urlencoded'}
 		)
 		.then(function(auth) {
-			// todo test if we've got a ticket
-			restangular = configureConnection(apiPath, auth.ticket);
+			// todo 4 test if we've got a ticket
+			restangular = configureConnection(apiConfig.apiPath, auth.ticket);
+			connected = true;
 			deferred.resolve(auth.ticket);
+			
+			// todo 5 display login if it fails
 		});
 
 		return deferred.promise;
-	}
+	};
+	
+	// initialise the connection details
+	var init = function (username, password) {
+		var deferred = $q.defer();
+
+		// get any non-default config
+		// todo 3 get config from where?
+
+		if (username)
+			apiConfig.username = username;
+		if (password)
+			apiConfig.password = password;
 		
+		// try to login
+		userLogin(apiConfig.username, apiConfig.password)
+		.then(function() {
+			deferred.resolve();
+		});
+
+		return deferred.promise;
+	};
+		
+	// checks if it's time to refresh the ticket
+	var checkTicket = function () {
+		var deferred = $q.defer();
+
+		// todo 2 skip this if the ticket isn't expired
+		userLogin(apiConfig.username, apiConfig.password)
+		.then(function() {
+			deferred.resolve();
+		});
+
+		return deferred.promise;
+	};
+
 	// get the definition for a node
 	var getNode = function(nodeId) {
 		var deferred = $q.defer();
@@ -74,7 +95,6 @@ angular.module('csRepository').factory('csRepository', function($rootScope, $q, 
 				deferred.resolve(node);
 			});
 		});
-		// todo handle a ticket error
 		
 		return deferred.promise;
 	};
@@ -90,7 +110,6 @@ angular.module('csRepository').factory('csRepository', function($rootScope, $q, 
 				deferred.resolve(nodes);
 			});
 		});
-		// todo handle a ticket error
 		
 		return deferred.promise;
     };
@@ -105,6 +124,8 @@ angular.module('csRepository').factory('csRepository', function($rootScope, $q, 
 			checkTicket()
 			.then(function() {
 				
+				
+				// todo 1 get this working
 				getNode(start.data.parent_id)
 				.then(function(node) {
 
@@ -113,9 +134,7 @@ angular.module('csRepository').factory('csRepository', function($rootScope, $q, 
 						deferred.resolve(crumbs.reverse());
 
 				});
-				
 			});
-			// todo handle a ticket error
 		}
 		else {
 			deferred.resolve(crumbs.reverse());
@@ -124,9 +143,17 @@ angular.module('csRepository').factory('csRepository', function($rootScope, $q, 
 		return deferred.promise;
 	};
 	
-	// return the public functions
+	/* --- service initialisation ---*/
+
+	// set up the API connection
+	var restangular = configureConnection(apiConfig.apiPath);
+
+	// see if there's any config, then login
+	init();
+	
+	/* -- module public items ---*/
 	return {
-		init: init,
+		login: init,
 		getNode: getNode,
 		getChildren: getChildren,
 		getAncestors: getAncestors
@@ -134,20 +161,19 @@ angular.module('csRepository').factory('csRepository', function($rootScope, $q, 
 	
 });
 
-angular.module('csRepository').service('csLogin', function($modal) {
+angular.module('csApi').service('csLogin', function($modal) {
 
-	var loginDialog = function() {
+	var showLogin = function() {
+	
 		return $modal.open({
-			templateUrl: './views/csRepository/login.html',
+			templateUrl: './views/csApi/login.html',
 			controller: 'LoginController',
 			size: 'sm'
 		});
 	};
 	
 	return {
-		showLogin: loginDialog
+		showLogin: showLogin
 	};
 	
-	
 });
-

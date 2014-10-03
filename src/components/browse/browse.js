@@ -10,7 +10,7 @@
 	
 		* ngRoute module, from the core angular library
 			bower install angular-route or https://github.com/angular/angular.js
-		* csRepository module, from the csDumb client
+		* csApi module, from the csDumb client
 			https://github.com/markfarrall/csdumb
 			
 	The browse module relies on the following other components:
@@ -31,5 +31,7 @@
 	* startNode - the ID of the fist folder to display - defaults to 2000, i.e. Enterprise workspace
 	
 */
+
+// todo move this to README.md
 
 angular.module('browse', []);

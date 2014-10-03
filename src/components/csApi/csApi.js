@@ -6,14 +6,14 @@
 	
 /* Dependencies
 
-	The csRepository module relies on the following: 
+	The csApi module relies on the following: 
 	
 		* ui.bootstrap.modal module, from the angular-bootstrap library
 			bower install angular-bootstrap or https://github.com/angular-ui/bootstrap
 		* restangular
 			bower install restangular or https://github.com/mgonto/restangular
 		
-	The csRepository module relies on the following other components:
+	The csApi module relies on the following other components:
 	
 		* Bootstrap - css only version for display
 			bower install bootstrap-css-only or https://github.com/fyockm/bootstrap-css-only
@@ -34,4 +34,4 @@
 	
 */
 	
-angular.module('csRepository', []);
+angular.module('csApi', []);
