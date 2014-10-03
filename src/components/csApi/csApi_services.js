@@ -24,31 +24,8 @@ angular.module('csApi').factory('csApi', function($rootScope, $q, Restangular, c
 			if (ticket !== '') {
 				Configurer.setDefaultHeaders({otcsticket: ticket});
 			}
-			// todo 6 setup JSONP access
+			// todo setup JSONP access
 		});
-	};
-	
-	// tries to get a ticket from the API
-	var userLogin = function (username, password) {
-		var deferred = $q.defer();
-		
-		restangular = configureConnection(apiConfig.apiPath);
-		restangular.one('auth').customPOST(
-			{},
-			'',
-			{username: username, password: password},
-			{ContentType: 'application/x-www-form-urlencoded'}
-		)
-		.then(function(auth) {
-			// todo 4 test if we've got a ticket
-			restangular = configureConnection(apiConfig.apiPath, auth.ticket);
-			connected = true;
-			deferred.resolve(auth.ticket);
-			
-			// todo 5 display login if it fails
-		});
-
-		return deferred.promise;
 	};
 	
 	// initialise the connection details
@@ -56,7 +33,7 @@ angular.module('csApi').factory('csApi', function($rootScope, $q, Restangular, c
 		var deferred = $q.defer();
 
 		// get any non-default config
-		// todo 3 get config from where?
+		// todo get config from where?
 
 		if (username)
 			apiConfig.username = username;
@@ -72,11 +49,34 @@ angular.module('csApi').factory('csApi', function($rootScope, $q, Restangular, c
 		return deferred.promise;
 	};
 		
+	// tries to get a ticket from the API
+	var userLogin = function (username, password) {
+		var deferred = $q.defer();
+		
+		restangular = configureConnection(apiConfig.apiPath);
+		restangular.one('auth').customPOST(
+			{},
+			'',
+			{username: username, password: password},
+			{ContentType: 'application/x-www-form-urlencoded'}
+		)
+		.then(function(auth) {
+			// todo test if we've got a ticket
+			restangular = configureConnection(apiConfig.apiPath, auth.ticket);
+			connected = true;
+			deferred.resolve(auth.ticket);
+			
+			// todo display login if it fails
+		});
+
+		return deferred.promise;
+	};
+	
 	// checks if it's time to refresh the ticket
 	var checkTicket = function () {
 		var deferred = $q.defer();
 
-		// todo 2 skip this if the ticket isn't expired
+		// todo skip this if the ticket isn't expired
 		userLogin(apiConfig.username, apiConfig.password)
 		.then(function() {
 			deferred.resolve();
@@ -86,12 +86,12 @@ angular.module('csApi').factory('csApi', function($rootScope, $q, Restangular, c
 	};
 
 	// get the definition for a node
-	var getNode = function(nodeId) {
+	var getNode = function(id) {
 		var deferred = $q.defer();
 		
 		checkTicket()
 		.then(function() {
-			restangular.one('nodes', nodeId).get()
+			restangular.one('nodes', id).get()
 			.then(function(node) {
 				deferred.resolve(node);
 			});
@@ -100,13 +100,43 @@ angular.module('csApi').factory('csApi', function($rootScope, $q, Restangular, c
 		return deferred.promise;
 	};
 	
-	// get the children for a node
-	var getChildren = function (parentId) {
+	// get the actions for a node
+	var getActions = function(id) {
 		var deferred = $q.defer();
 		
 		checkTicket()
 		.then(function() {
-			restangular.one('nodes', parentId).one('nodes').get()
+			restangular.one('nodes', id).one('actions').get()
+			.then(function(actions) {
+				deferred.resolve(actions);
+			});
+		});
+		
+		return deferred.promise;
+	};
+	
+	// get the versions for a node
+	var getVersions = function(id) {
+		var deferred = $q.defer();
+		
+		checkTicket()
+		.then(function() {
+			restangular.one('nodes', id).one('versions').get()
+			.then(function(versions) {
+				deferred.resolve(versions);
+			});
+		});
+		
+		return deferred.promise;
+	};
+	
+	// get the children for a node
+	var getChildren = function (id) {
+		var deferred = $q.defer();
+		
+		checkTicket()
+		.then(function() {
+			restangular.one('nodes', id).one('nodes').get()
 			.then(function(nodes) {
 				deferred.resolve(nodes);
 			});
@@ -116,18 +146,17 @@ angular.module('csApi').factory('csApi', function($rootScope, $q, Restangular, c
     };
 	
 	// get the ancestors for a node
-	var getAncestors = function(start) {
+	var getAncestors = function(node) {
 		var deferred = $q.defer();
 		var crumbs = [];
-		crumbs.push({id: start.data.id, name: start.data.name});
+		crumbs.push({id: node.data.id, name: node.data.name});
 		
-		if (start.data.parent_id != '-1'){
+		if (node.data.parent_id != '-1'){
 			checkTicket()
 			.then(function() {
-				
-				
-				// todo 1 get this working
-				getNode(start.data.parent_id)
+								
+				// todo get this working
+				getNode(node.data.parent_id)
 				.then(function(node) {
 
 					//if (node.data.parent_id == '-1') {
@@ -149,13 +178,15 @@ angular.module('csApi').factory('csApi', function($rootScope, $q, Restangular, c
 	// set up the API connection
 	var restangular = configureConnection(apiConfig.apiPath);
 
-	// see if there's any config, then login
+	// get any config and login
 	init();
 	
 	/* -- module public items ---*/
 	return {
 		login: init,
 		getNode: getNode,
+		getActions: getActions,
+		getVersions: getVersions,
 		getChildren: getChildren,
 		getAncestors: getAncestors
 	};

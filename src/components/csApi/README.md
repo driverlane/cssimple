@@ -22,11 +22,13 @@ The following configuration options can be supplied (how?):
 
 ## Commands
 
-* csApi.login - don't use this, it's for the csLogin form. If you don't want the end user to specify connection details, supply it in config.
-* csApi.getNode(id, versions) - returns details for the supplied id, set versions to true if you want the object to contain version definitions
-* csApi.getChildre(id, versions) - returns children of the supplied id, set versions to true if you want the child objects to contain version definitions
+* csApi.getNode(id) - returns details for the supplied id
+* csApi.getActions(id) - retuns collection of actions for the supplied id
+* csApi.getVersions(id) - returns versions for the id
+* csApi.getChildren(id) - returns collection of children nodes for the supplied id
 * csApi.getNode(node) - returns parents for the supplied node object
-* csApi.getVersion(node) - returns versions for the supplied node object
-* csForm.showForm() - don't use it, it's there to handle login failures
 
-
+#### Internal use 
+These are visible, but they're intended for internal use. Use the configuration approach instead.
+* csApi.login() - logs into the API with the supplied username and password, generally captured by the csLogin dialog
+* csLogin.showForm() - displays a loginform, intended to only be used if the login can't get a ticket from sso or configuration

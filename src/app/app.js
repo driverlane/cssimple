@@ -19,17 +19,5 @@ angular.module('csDumb').config(function($routeProvider) {
 		when('/browse', { templateUrl: 'views/browse/browse.html', controller: 'BrowseController' }).
 		when('/browse/:id', { templateUrl: 'views/browse/browse.html', controller: 'BrowseController' }).
 		otherwise({ redirectTo: '/browse' });
-});
 
-angular.module('csDumb').run(function($rootScope) {
-
-	// todo next should this move to config?
-
-	// config for the browse module
-	$rootScope.browseConfig = {
-		startNode: 2000,
-		viewableTypes: [144],
-		browseableMimeTypes: ['application/pdf']
-	};
-	
 });

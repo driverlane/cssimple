@@ -4,12 +4,15 @@
     0.1.0 - initial version October 2014 Mark Farrall
     --------------------------------------------------------------------------------  */
 	
-angular.module('browse').controller('BrowseController', function($rootScope, $scope, $routeParams, $location, csApi, viewer) {
+angular.module('browse').controller('BrowseController', function($scope, $routeParams, $location, csApi, viewer) {
 
 	/* --- variables --- */
-	var browseConfig = {};
-	browseConfig.startNode = 2000;
-	browseConfig.viewableTypes = [144];
+	var browseConfig = {
+		startNode: 2000,
+		viewableTypes: [144],
+		browseableMimeTypes: ['application/pdf']
+	};
+
 
 	/* --- functions --- */
 
@@ -25,14 +28,20 @@ angular.module('browse').controller('BrowseController', function($rootScope, $sc
 		
 			// send it to the viewer if it's a supported type
 			if (browseConfig.viewableTypes.indexOf(node.type) >= 0) {
-				// todo 1 get the source from the node object
-				var scope = '/otcs/cs.exe/46099/Resonate_KT_%2D_WebReports_Workflow_Extensions_10%2E0%2E1_Release_Notes.pdf?func=doc.Fetch&nodeid=46099';
-				viewer.showViewer(scope);
-				return;
+				// todo get the source from the node object
+				
+				// get the object actions
+				var actions = csApi.getActions(node.id)
+				.then(function(actions) {
+					var open = actions.actions.filter(function(command) {
+						return command.name === 'Open';
+					});
+					viewer.showViewer(open[0].url);
+					return;
+				});
 			}
 			// otherwise show the properties
 			else {
-				// todo last create a properties viewer
 				console.log('open not supported yet');
 			}
 		}
@@ -47,7 +56,6 @@ angular.module('browse').controller('BrowseController', function($rootScope, $sc
 				case '0':
 					return 'fa-folder-open';
 				case '144':
-					// todo last support different mime types
 					return 'fa-file-pdf-o';
 				default:
 					return 'fa-bars';
@@ -86,16 +94,6 @@ angular.module('browse').controller('BrowseController', function($rootScope, $sc
 	};
 	
 	/* --- controller initialisation --- */
-	
-	// see if there's any config in the rootScope
-	if (typeof $rootScope.browseConfig !== 'undefined') {
-		if (typeof $rootScope.browseConfig.startNode !== 'undefined')
-			browseConfig.startNode = $rootScope.browseConfig.startNode;
-		if (typeof $rootScope.browseConfig.viewableTypes !== 'undefined')
-			browseConfig.viewableTypes = $rootScope.browseConfig.viewableTypes;
-		if (typeof $rootScope.browseConfig.browseableMimeTypes !== 'undefined')
-			browseConfig.browseableMimeTypes = $rootScope.browseConfig.browseableMimeTypes;
-	}
 	
 	// get the current id, if none use default
 	$scope.containerId = $routeParams.id;
