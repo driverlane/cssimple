@@ -6,7 +6,7 @@ Simple read only UI for Content Server
 
 The project uses [gulp.js](http://gulpjs.com/) as the testing and build task runner. To set up for development:
 
-1. install node - [http://nodejs.org/](http://nodejs.org/)
+1. install [node](http://nodejs.org/)
 2. install gulp globally: `npm install gulp -g`
 3. install the modules to support gulp: `npm install`
 4. install bower globally to manage third party components: `npm install bower -g`

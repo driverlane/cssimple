@@ -10,6 +10,7 @@ angular.module('csApi').factory('csApi', function($rootScope, $q, Restangular, c
 	var apiConfig = {
 		apiPath: '/otcs/cs.exe/api/v1/',
 		ssoEnabled: true,
+		expiry: 30,
 		username: 'a',
 		password: 'a'
 	};
