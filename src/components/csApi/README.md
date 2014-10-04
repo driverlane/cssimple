@@ -26,7 +26,7 @@ The following configuration options can be supplied (how?):
 * csApi.getActions(id) - retuns collection of actions for the supplied id
 * csApi.getVersions(id) - returns versions for the id
 * csApi.getChildren(id) - returns collection of children nodes for the supplied id
-* csApi.getNode(node) - returns parents for the supplied node object
+* csApi.getAncestors(node) - returns parents for the supplied node object
 
 #### Internal use 
 These are visible, but they're intended for internal use. Use the configuration approach instead.

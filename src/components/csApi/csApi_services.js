@@ -53,7 +53,7 @@ angular.module('csApi').factory('csApi', function($rootScope, $q, Restangular, c
 	var userLogin = function (username, password) {
 		var deferred = $q.defer();
 		
-		restangular = configureConnection(apiConfig.apiPath);
+		//restangular = configureConnection(apiConfig.apiPath);
 		restangular.one('auth').customPOST(
 			{},
 			'',
