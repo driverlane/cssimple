@@ -38,3 +38,8 @@
 	font-size: 1.2em;
 	padding: 0.2em 0em 0.2em 0.4em;
 }
+
+.viewer {
+	width: 1000px;
+	height: 800px;
+}

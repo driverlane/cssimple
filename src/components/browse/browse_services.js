@@ -6,14 +6,13 @@
 	
 angular.module('browse').service('viewer', function($modal) {
 
-	var showViewer = function(source) {
+	var showViewer = function(node) {
 		return $modal.open({
                 templateUrl: './views/browse/viewer.html',
                 controller: 'ViewerController',
-				size: 'lg',
                 resolve: {
-                    source: function () {
-                        return angular.copy(source);
+                    node: function () {
+                        return angular.copy(node);
                     }
                 }
             });

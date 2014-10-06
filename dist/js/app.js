@@ -16,11 +16,9 @@ angular.module('browse').controller('BrowseController', function($scope, $routeP
 
 	/* --- variables --- */
 	var browseConfig = {
-		startNode: 2000,
-		viewableTypes: [144],
-		browseableMimeTypes: ['application/pdf']
+		startNode: 2000
 	};
-
+	$scope.status = {};
 
 	/* --- functions --- */
 
@@ -29,29 +27,16 @@ angular.module('browse').controller('BrowseController', function($scope, $routeP
 	
 		// open any container objects
 		if (node.container) {
+		
+			// browse to the container
 			$location.path('browse/' + node.id);
 			return;
 		}
 		else {
-		
-			// send it to the viewer if it's a supported type
-			if (browseConfig.viewableTypes.indexOf(node.type) >= 0) {
-				// todo get the source from the node object
-				
-				// get the object actions
-				var actions = csApi.getActions(node.id)
-				.then(function(actions) {
-					var open = actions.actions.filter(function(command) {
-						return command.name === 'Open';
-					});
-					viewer.showViewer(open[0].url);
-					return;
-				});
-			}
-			// otherwise show the properties
-			else {
-				console.log('open not supported yet');
-			}
+	
+			// open the viewer
+			viewer.showViewer(node);
+			return;
 		}
 	};
 	
@@ -84,11 +69,13 @@ angular.module('browse').controller('BrowseController', function($scope, $routeP
 		csApi.getNode($scope.containerId)
 		.then(function(data) {
 			$scope.container = data;
+			$scope.status.parentLoaded = true;
 			
 			// get the breadcrumbs for the current id
 			csApi.getAncestors(data)
 			.then(function(crumbs) {
 				$scope.crumbs = crumbs;
+				$scope.status.crumbsLoaded = true;
 			});
 			
 		});
@@ -97,6 +84,7 @@ angular.module('browse').controller('BrowseController', function($scope, $routeP
 		csApi.getChildren($scope.containerId)
 		.then(function(data) {
 			$scope.nodes = data.data;
+			$scope.status.itemsLoaded = true;
 		});
 		
 	};
@@ -114,13 +102,66 @@ angular.module('browse').controller('BrowseController', function($scope, $routeP
 
 });
 
-angular.module('browse').controller('ViewerController', function($scope, $modalInstance, source) {
+angular.module('browse').controller('ViewerController', function($scope, $modalInstance, csApi, node) {
 
-	$scope.source = (angular.isDefined(source)) ? source : './views/404.html';
+	/* --- variables ---*/
+	var browseConfig = {
+		viewableTypes: [144],
+		viewableMimeTypes: ['application/pdf']
+	};
+	$scope.viewer = {};
+	
+	// determines whether or not the viewer is supported for this object
+	var initViewer = function() {
+	
+		// is it a supported object type
+		if (browseConfig.viewableTypes.indexOf(node.type) >= 0) {
+			
+			// turn on the viewer
+			$scope.viewer.enabled = true;
+			
+			// is it a viewable mimeTypes
+			var versions = csApi.getVersions(node.id)
+			.then(function(versions) {
+				if(browseConfig.viewableMimeTypes.indexOf(versions.data[versions.data.length - 1].mime_type) >= 0) {
+				
+					// set the dimensions and turn on the panel
+					console.log(window.height);
+					$scope.viewer.supportedType = true;
+				
+					// get the actions for the iframe url
+					var actions = csApi.getActions(node.id)
+					.then(function(actions) {
+						var open = actions.actions.filter(function(command) {
+							return command.name === 'Open';
+						});
+						$scope.source = open[0].url;
+						return;
+					});
+
+				}
+				else {
+					$scope.viewer.supportedType = false;
+				}
+				
+			});
+			
+		}
+
+	};
 
 	$scope.close = function () {
 		$modalInstance.close();
 	};
+	
+	/* --- controller logic --- */
+	
+	// get the node from the service
+	$scope.node = (angular.isDefined(node));
+	if (!$scope.node)
+		$scope.viewer.error = true;
+	else
+		initViewer();
 	
 });
 
@@ -132,14 +173,13 @@ angular.module('browse').controller('ViewerController', function($scope, $modalI
 	
 angular.module('browse').service('viewer', function($modal) {
 
-	var showViewer = function(source) {
+	var showViewer = function(node) {
 		return $modal.open({
                 templateUrl: './views/browse/viewer.html',
                 controller: 'ViewerController',
-				size: 'lg',
                 resolve: {
-                    source: function () {
-                        return angular.copy(source);
+                    node: function () {
+                        return angular.copy(node);
                     }
                 }
             });
@@ -278,6 +318,8 @@ angular.module('csApi').factory('csApi', function($rootScope, $q, Restangular, c
 			// todo test if we've got a ticket
 			restangular = configureConnection(apiConfig.apiPath, auth.ticket);
 			connected = true;
+			apiConfig.expires = new Date();
+			apiConfig.expires.setMinutes(apiConfig.expires.getMinutes() + (apiConfig.expiry - 5));
 			deferred.resolve(auth.ticket);
 			
 			// todo display login if it fails
@@ -291,11 +333,17 @@ angular.module('csApi').factory('csApi', function($rootScope, $q, Restangular, c
 		var deferred = $q.defer();
 
 		// todo skip this if the ticket isn't expired
-		userLogin(apiConfig.username, apiConfig.password)
-		.then(function() {
+		var now = new Date();
+		if (!apiConfig.expires || apiConfig.expires < now) {
+			userLogin(apiConfig.username, apiConfig.password)
+			.then(function() {
+				deferred.resolve();
+			});
+		}
+		else {
 			deferred.resolve();
-		});
-
+		}
+		
 		return deferred.promise;
 	};
 
@@ -363,26 +411,40 @@ angular.module('csApi').factory('csApi', function($rootScope, $q, Restangular, c
 	var getAncestors = function(node) {
 		var deferred = $q.defer();
 		var crumbs = [];
-		crumbs.push({id: node.data.id, name: node.data.name});
+		//crumbs.push({id: node.data.id, name: node.data.name});
 		
 		if (node.data.parent_id != '-1'){
 			checkTicket()
-			.then(function() {
-								
-				// todo get this working
-				getNode(node.data.parent_id)
-				.then(function(node) {
-
-					//if (node.data.parent_id == '-1') {
-						crumbs.push({id: node.data.id, name: node.data.name});
-						deferred.resolve(crumbs.reverse());
-
+			.then(function() {								
+				crawlAncestors(crumbs, node.data.parent_id)
+				.then(function(crumbs) {
+					deferred.resolve(crumbs.reverse());
 				});
 			});
 		}
 		else {
 			deferred.resolve(crumbs.reverse());
 		}
+		
+		return deferred.promise;
+	};
+	
+	// iterative function to crawl up an ancestor tree
+	var crawlAncestors = function(ancestors, parent, promise){
+		var deferred;
+		if (!promise)
+			deferred = $q.defer();
+		else
+			deferred = promise;
+		
+		getNode(parent)
+		.then(function(parent){
+			ancestors.push({id: parent.data.id, name: parent.data.name});
+			if (parent.data.parent_id == '-1')
+				deferred.resolve(ancestors);
+			else
+				crawlAncestors(ancestors, parent.data.parent_id, deferred);
+		});
 		
 		return deferred.promise;
 	};

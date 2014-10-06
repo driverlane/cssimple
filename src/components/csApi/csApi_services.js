@@ -64,6 +64,8 @@ angular.module('csApi').factory('csApi', function($rootScope, $q, Restangular, c
 			// todo test if we've got a ticket
 			restangular = configureConnection(apiConfig.apiPath, auth.ticket);
 			connected = true;
+			apiConfig.expires = new Date();
+			apiConfig.expires.setMinutes(apiConfig.expires.getMinutes() + (apiConfig.expiry - 5));
 			deferred.resolve(auth.ticket);
 			
 			// todo display login if it fails
@@ -77,11 +79,17 @@ angular.module('csApi').factory('csApi', function($rootScope, $q, Restangular, c
 		var deferred = $q.defer();
 
 		// todo skip this if the ticket isn't expired
-		userLogin(apiConfig.username, apiConfig.password)
-		.then(function() {
+		var now = new Date();
+		if (!apiConfig.expires || apiConfig.expires < now) {
+			userLogin(apiConfig.username, apiConfig.password)
+			.then(function() {
+				deferred.resolve();
+			});
+		}
+		else {
 			deferred.resolve();
-		});
-
+		}
+		
 		return deferred.promise;
 	};
 
@@ -149,26 +157,40 @@ angular.module('csApi').factory('csApi', function($rootScope, $q, Restangular, c
 	var getAncestors = function(node) {
 		var deferred = $q.defer();
 		var crumbs = [];
-		crumbs.push({id: node.data.id, name: node.data.name});
+		//crumbs.push({id: node.data.id, name: node.data.name});
 		
 		if (node.data.parent_id != '-1'){
 			checkTicket()
-			.then(function() {
-								
-				// todo get this working
-				getNode(node.data.parent_id)
-				.then(function(node) {
-
-					//if (node.data.parent_id == '-1') {
-						crumbs.push({id: node.data.id, name: node.data.name});
-						deferred.resolve(crumbs.reverse());
-
+			.then(function() {								
+				crawlAncestors(crumbs, node.data.parent_id)
+				.then(function(crumbs) {
+					deferred.resolve(crumbs.reverse());
 				});
 			});
 		}
 		else {
 			deferred.resolve(crumbs.reverse());
 		}
+		
+		return deferred.promise;
+	};
+	
+	// iterative function to crawl up an ancestor tree
+	var crawlAncestors = function(ancestors, parent, promise){
+		var deferred;
+		if (!promise)
+			deferred = $q.defer();
+		else
+			deferred = promise;
+		
+		getNode(parent)
+		.then(function(parent){
+			ancestors.push({id: parent.data.id, name: parent.data.name});
+			if (parent.data.parent_id == '-1')
+				deferred.resolve(ancestors);
+			else
+				crawlAncestors(ancestors, parent.data.parent_id, deferred);
+		});
 		
 		return deferred.promise;
 	};
