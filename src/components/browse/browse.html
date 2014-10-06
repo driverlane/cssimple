@@ -12,7 +12,7 @@
 	</div>
 	<div ng-show="status.itemsLoaded">
 		<ul class="browse-panel">
-			<li ng-repeat="node in nodes" class="browse-item" ng-click="openNode(node)">
+			<li ng-repeat="node in nodes track by node.id" class="browse-item" ng-click="openNode(node)">
 				<i class="browse-icon fa fa-2x {{getIcon(node)}}"></i>
 				<div class="browse-details">
 					<span class="browse-name">{{node.name}}</span><br>

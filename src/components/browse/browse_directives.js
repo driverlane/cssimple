@@ -7,7 +7,6 @@
 angular.module('browse').directive('viewerSize', function ($window) {
 
 	return function (scope, element) {
-	
 		scope.height = $window.innerHeight * 0.8;
-	
+	};
 });

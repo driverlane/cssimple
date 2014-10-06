@@ -18,7 +18,7 @@ angular.module('browse').controller('BrowseController', function($scope, $routeP
 	$scope.openNode = function(node) {
 	
 		// open any container objects
-		if (node.container) {
+		if (node.type === 0) {
 		
 			// browse to the container
 			$location.path('browse/' + node.id);
