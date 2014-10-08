@@ -32,22 +32,6 @@ angular.module('browse').controller('BrowseController', function($scope, $routeP
 		}
 	};
 	
-	// returns the icon for an item type
-	$scope.getIcon = function(node) {
-		if (node) {
-			switch(node.type.toString()) {
-				case '141':
-					return 'fa-home';
-				case '0':
-					return 'fa-folder-open';
-				case '144':
-					return 'fa-file-pdf-o';
-				default:
-					return 'fa-bars';
-			}
-		}
-	};
-	
 	// returns a basic date
 	$scope.setDate = function(date) {
 		var newDate = new Date(date);
@@ -62,12 +46,16 @@ angular.module('browse').controller('BrowseController', function($scope, $routeP
 		.then(function(data) {
 			$scope.container = data;
 			$scope.status.parentLoaded = true;
-			
+			if ($scope.status.itemsLoaded && $scope.status.crumbsLoaded)
+				$scope.status.allLoaded = true;
+				
 			// get the breadcrumbs for the current id
 			csApi.getAncestors(data)
 			.then(function(crumbs) {
 				$scope.crumbs = crumbs;
 				$scope.status.crumbsLoaded = true;
+			if ($scope.status.parentLoaded && $scope.status.itemsLoaded)
+				$scope.status.allLoaded = true;
 			});
 			
 		});
@@ -77,6 +65,8 @@ angular.module('browse').controller('BrowseController', function($scope, $routeP
 		.then(function(data) {
 			$scope.nodes = data.data;
 			$scope.status.itemsLoaded = true;
+			if ($scope.status.parentLoaded && $scope.status.crumbsLoaded)
+				$scope.status.allLoaded = true;
 		});
 		
 	};

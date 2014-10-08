@@ -1,28 +1,30 @@
 <div class="container">
-	<div>
-		<ol class="breadcrumb" ng-show="crumbs.length">
-			<li ng-repeat="crumb in crumbs" ng-class="{'active':$last}">
-				<a href="#/browse/{{crumb.id}}"">{{crumb.name}}</a>
-			</li>
-		</ol>
+	<div ng-show="status.allLoaded">
+		<div>
+			<ol class="breadcrumb" ng-show="crumbs.length">
+				<li ng-repeat="crumb in crumbs" ng-class="{'active':$last}">
+					<a href="#/browse/{{crumb.id}}"">{{crumb.name}}</a>
+				</li>
+			</ol>
+		</div>
+		<div class="browse-container">
+			<i class="browse-container-name-icon " browse-icon="{{container.data.type}},{{container.data.id}}"></i>
+			<div class="browse-container-name">{{container.data.name}}</div>
+		</div>
+		<div>
+			<ul class="browse-panel">
+				<li ng-repeat="node in nodes track by node.id" class="browse-item" ng-click="openNode(node)">
+					<i class="browse-icon " browse-icon="{{node.type}},{{node.id}}"></i>
+					<div class="browse-details">
+						<span class="browse-name">{{node.name}}</span><br>
+						<span class="browse-details">Modified: {{setDate(node.modify_date)}}</span>
+					</div>
+				</li>
+			</ul><br>
+			<p>Items: {{nodes.length}}</p>
+		</div>
 	</div>
-	<div class="browse-container">
-		<i class="browse-container-name-icon fa fa-3x {{getIcon(container.data)}}"></i>
-		<div class="browse-container-name">{{container.data.name}}</div>
-	</div>
-	<div ng-show="status.itemsLoaded">
-		<ul class="browse-panel">
-			<li ng-repeat="node in nodes" class="browse-item" ng-click="openNode(node)">
-				<i class="browse-icon fa fa-2x {{getIcon(node)}}"></i>
-				<div class="browse-details">
-					<span class="browse-name">{{node.name}}</span><br>
-					<span class="browse-details">Modified: {{setDate(node.modify_date)}}</span>
-				</div>
-			</li>
-		</ul><br>
-		<p>Items: {{nodes.length}}</p>
-	</div>
-	<div ng-show="!status.itemsLoaded">
+	<div ng-show="!status.allLoaded">
 		<i class="fa fa-spinner fa-spin"></i>&nbsp;Retrieving information...
 	</div>
 </div>
