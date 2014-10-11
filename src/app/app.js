@@ -16,8 +16,24 @@ angular.module('csDumb', [
 angular.module('csDumb').config(function($routeProvider) {
 
 	$routeProvider.
-		when('/browse', { templateUrl: 'views/browse/browse.html', controller: 'BrowseController' }).
-		when('/browse/:id', { templateUrl: 'views/browse/browse.html', controller: 'BrowseController' }).
-		otherwise({ redirectTo: '/browse' });
+	when('/browse', { templateUrl: 'views/browse/browse.html', controller: 'BrowseController' }).
+	when('/browse/:id', { templateUrl: 'views/browse/browse.html', controller: 'BrowseController' }).
+	otherwise({ redirectTo: '/browse' });
 
+});
+
+angular.module('csDumb').run(function(appConfig, browseConfig, csApiConfig) {
+
+	// set the title
+	/*var appCustom = {
+		title: 'A new title'
+	};
+	appConfig.configure(appCustom);*/
+
+	// configure the browse module
+	/*var browseCustom = {
+		startNode: 53912
+	};
+	browseConfig.configure(browseCustom);*/
+	
 });

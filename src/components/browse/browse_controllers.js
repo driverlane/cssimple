@@ -4,12 +4,9 @@
     0.1.0 - initial version October 2014 Mark Farrall
     --------------------------------------------------------------------------------  */
 	
-angular.module('browse').controller('BrowseController', function($scope, $routeParams, $location, csApi, viewer) {
+angular.module('browse').controller('BrowseController', function($scope, $routeParams, $location, browseConfig, csApi, viewer) {
 
 	/* --- variables --- */
-	var browseConfig = {
-		startNode: 2000
-	};
 	$scope.status = {};
 
 	/* --- functions --- */
@@ -46,15 +43,13 @@ angular.module('browse').controller('BrowseController', function($scope, $routeP
 		.then(function(data) {
 			$scope.container = data;
 			$scope.status.parentLoaded = true;
-			if ($scope.status.itemsLoaded && $scope.status.crumbsLoaded)
-				$scope.status.allLoaded = true;
 				
 			// get the breadcrumbs for the current id
 			csApi.getAncestors(data)
 			.then(function(crumbs) {
 				$scope.crumbs = crumbs;
 				$scope.status.crumbsLoaded = true;
-			if ($scope.status.parentLoaded && $scope.status.itemsLoaded)
+			if ($scope.status.itemsLoaded)
 				$scope.status.allLoaded = true;
 			});
 			
@@ -65,7 +60,7 @@ angular.module('browse').controller('BrowseController', function($scope, $routeP
 		.then(function(data) {
 			$scope.nodes = data.data;
 			$scope.status.itemsLoaded = true;
-			if ($scope.status.parentLoaded && $scope.status.crumbsLoaded)
+			if ($scope.status.crumbsLoaded)
 				$scope.status.allLoaded = true;
 		});
 		
@@ -76,7 +71,7 @@ angular.module('browse').controller('BrowseController', function($scope, $routeP
 	// get the current id, if none use default
 	$scope.containerId = $routeParams.id;
 	if (!$scope.containerId) {
-		$scope.containerId = browseConfig.startNode;
+		$scope.containerId = browseConfig.config.startNode;
 	}
 
 	// load the page
@@ -84,20 +79,16 @@ angular.module('browse').controller('BrowseController', function($scope, $routeP
 
 });
 
-angular.module('browse').controller('ViewerController', function($scope, $modalInstance, csApi, node) {
+angular.module('browse').controller('ViewerController', function($scope, $modalInstance, browseConfig, csApi, node) {
 
 	/* --- variables ---*/
-	var browseConfig = {
-		viewableTypes: [144],
-		viewableMimeTypes: ['application/pdf']
-	};
 	$scope.viewer = {};
 	
 	// determines whether or not the viewer is supported for this object
 	var initViewer = function() {
 	
 		// is it a supported object type
-		if (browseConfig.viewableTypes.indexOf(node.type) >= 0) {
+		if (browseConfig.config.viewableTypes.indexOf(node.type) >= 0) {
 			
 			// turn on the viewer
 			$scope.viewer.enabled = true;
@@ -105,7 +96,7 @@ angular.module('browse').controller('ViewerController', function($scope, $modalI
 			// is it a viewable mimeTypes
 			var versions = csApi.getVersions(node.id)
 			.then(function(versions) {
-				if(browseConfig.viewableMimeTypes.indexOf(versions.data[versions.data.length - 1].mime_type) >= 0) {
+				if(browseConfig.config.viewableMimeTypes.indexOf(versions.data[versions.data.length - 1].mime_type) >= 0) {
 				
 					// set the dimensions and turn on the panel
 					console.log(window.height);

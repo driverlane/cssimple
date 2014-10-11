@@ -1,18 +1,18 @@
 <!doctype html>
-<html lang="en">
+<html ng-app="csDumb" ng-controller="AppController">
 <head>
 	<meta charset="utf-8">
-	<title>CS Dumb</title>
+	<title>{{title}}</title>
 	<link rel="stylesheet" href="css/app.css">
 	<link rel="stylesheet" href="css/vendor.css">
 </head>
-<body ng-app="csDumb">
+<body>
 
 	<header>
 		<nav class="navbar navbar-default">
 		<div class="container">
 			<div class="navbar-header">
-				<a class="navbar-brand" href="/res/csdumb/">Content Server Read Only</a>
+				<a class="navbar-brand" href="/res/csdumb/">{{title}}</a>
 			</div>
 
 			<ul class="nav navbar-nav navbar-right">

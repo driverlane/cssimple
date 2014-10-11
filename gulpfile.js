@@ -1,26 +1,26 @@
-var gulp = require('gulp');
-var clean = require('gulp-rimraf');
-var changed = require('gulp-changed');
-var concat = require('gulp-concat');
-var cssminify = require('gulp-minify-css');
-var rename = require('gulp-rename');
-var imagemin = require('gulp-imagemin');
-var stripdebug = require('gulp-strip-debug');
-var uglify = require('gulp-uglify');
-var jshint = require('gulp-jshint');
-var filter = require('gulp-filter');
-var flatten = require('gulp-flatten');
-var bowerfiles = require('main-bower-files');
-var annotate = require('gulp-ng-annotate');
-var karma = require('karma').server;
-var argv = require('yargs').argv;
-var runsequence = require('run-sequence');
-var livereload = require('gulp-livereload');
-var gulpif = require('gulp-if');
-var plumber = require('gulp-plumber');
-var protractor = require('protractor');
-var exec = require('child_process').exec;
-var gutil = require('gulp-util');
+var gulp = require('gulp'),
+clean = require('gulp-rimraf'),
+changed = require('gulp-changed'),
+concat = require('gulp-concat'),
+cssminify = require('gulp-minify-css'),
+rename = require('gulp-rename'),
+imagemin = require('gulp-imagemin'),
+stripdebug = require('gulp-strip-debug'),
+uglify = require('gulp-uglify'),
+jshint = require('gulp-jshint'),
+filter = require('gulp-filter'),
+flatten = require('gulp-flatten'),
+bowerfiles = require('main-bower-files'),
+annotate = require('gulp-ng-annotate'),
+karma = require('karma').server,
+argv = require('yargs').argv,
+runsequence = require('run-sequence'),
+livereload = require('gulp-livereload'),
+gulpif = require('gulp-if'),
+plumber = require('gulp-plumber'),
+protractor = require('protractor'),
+exec = require('child_process').exec,
+gutil = require('gulp-util');
 
 /* testing tasks */
 
@@ -38,6 +38,7 @@ gulp.task('unit', function(done) {
 		configFile: __dirname + '/karma.conf.js',
 		singleRun: true
 	}, done);*/
+	return;
 });
 
 // headless version for watch based testing
@@ -47,24 +48,26 @@ gulp.task('unitlight', function(done) {
 		singleRun: true,
 		browsers: ['PhantomJS']
 	}, done);*/
+	return;
 });
 
 // use protractor to run system tests
 gulp.task('system', function (cb) {
-  /*exec('node .\\node_modules\\protractor\\bin\\protractor -configFile protractor.config.js', function (err, stdout, stderr) {
-    console.log(stdout);
-    console.log(stderr);
-    cb(err);
-  });*/
+	/*exec('node .\\node_modules\\protractor\\bin\\protractor -configFile protractor.config.js', function (err, stdout, stderr) {
+		console.log(stdout);
+		console.log(stderr);
+		cb(err);
+	});*/
+	return;
 });
 
 // download/update the selenium server
 gulp.task('updatewebdriver', function (cb) {
-  exec('node .\\node_modules\\protractor\\bin\\webdriver-manager update --ie', function (err, stdout, stderr) {
-    console.log(stdout);
-    console.log(stderr);
-    cb(err);
-  });
+	exec('node .\\node_modules\\protractor\\bin\\webdriver-manager update --ie', function (err, stdout, stderr) {
+		console.log(stdout);
+		console.log(stderr);
+		cb(err);
+	});
 });
 
 /* dist tasks */
@@ -114,7 +117,7 @@ gulp.task('css', function() {
 		.pipe(concat('app.css'))
 		.pipe(cssminify())
 		.pipe(gulp.dest('./dist/css/'))
-		.pipe(gulpif(reloading, livereload()));
+		.pipe(gulpif(localreload, livereload()));
 });
 
 // combine and copy the css
@@ -122,7 +125,7 @@ gulp.task('cssnomin', function() {
 	return gulp.src(['./src/css/*.css'])
 		.pipe(concat('app.css'))
 		.pipe(gulp.dest('./dist/css/'))
-		.pipe(gulpif(reloading, livereload()));
+		.pipe(gulpif(localreload, livereload()));
 });
 
 // minify and copy images
@@ -131,7 +134,7 @@ gulp.task('img', function() {
 		.pipe(changed('./dist/img/'))
 		.pipe(imagemin())
 		.pipe(gulp.dest('./dist/img/'))
-		.pipe(gulpif(reloading, livereload()));
+		.pipe(gulpif(localreload, livereload()));
 });
 
 // build concatenated and minified javascript
@@ -145,7 +148,7 @@ gulp.task('js', function() {
 		.pipe(annotate())
         .pipe(uglify())
         .pipe(gulp.dest('./dist/js/'))
-		.pipe(gulpif(reloading, livereload()));		
+		.pipe(gulpif(localreload, livereload()));		
 });
 
 // build concatenated javascript
@@ -157,29 +160,30 @@ gulp.task('jsnomin', function() {
         .pipe(rename('app.min.js'))
 		.pipe(annotate())
         .pipe(gulp.dest('./dist/js/'))
-		.pipe(gulpif(reloading, livereload()));
+		.pipe(gulpif(localreload, livereload()));
 });
 
 // copy the root
 gulp.task('root', function() {
-	return gulp.src('./src/*.html')
+	return gulp.src('./src/*.{html,json}')
 		.pipe(gulp.dest('./dist/'))
-		.pipe(gulpif(reloading, livereload()));
+		.pipe(gulpif(localreload, livereload()));
 });
 
 // copy the views
 gulp.task('views', function() {
 	return gulp.src(['./src/components/**/*.html','./src/app/**/*.html'])
 		.pipe(gulp.dest('./dist/views/'))
-		.pipe(gulpif(reloading, livereload()));
+		.pipe(gulpif(localreload, livereload()));
 });
 
 // copies all resources to dist
 gulp.task('copy', ['css','img','js','root','views']);
 
 // clean and build dist
-gulp.task('build', function() {
-	runsequence('lint','unit','clean','bower','copy','system');
+gulp.task('build', function(done) {
+	// add unit and system testing
+	runsequence('lint','clean','bower','copy',done);
 });
 
 /* upload task */
@@ -189,7 +193,9 @@ gulp.task('upload', function() {
 	var paths = getPaths();
 	for (var i = 0; i < paths.length; i++) {
 		gulp.src('./dist/**/*.*')
-			.pipe(gulp.dest(paths[i]));
+			.pip(changed(paths[i]))
+			.pipe(gulp.dest(paths[i]))
+			.pipe(gulpif(remotereload, livereload()));
 	}
 	return;
 });
@@ -229,7 +235,8 @@ function getEnv(name) {
 
 /* development tasks */
 
-var reloading = false;
+var localreload = false;
+var remotereload = false;
 
 gulp.task('watch', function() {
 	var connect = require('connect');
@@ -242,36 +249,52 @@ gulp.task('watch', function() {
 
 	// start livereload
 	livereload.listen();
-	reloading = true;
+	localreload = true;
 
 	// start watching
-    gulp.watch(['./src/*.html'], ['root']);
+    gulp.watch(['./src/*.{html,json}'], ['root']);
     gulp.watch(['./src/components/**/*.html'], ['views']);
-    gulp.watch(['./src/components/**/*.js','./src/app/**/*.js'], ['jsnomin','lint','unitlight']);
+	// todo add headless unit testing
+    gulp.watch(['./src/components/**/*.js','./src/app/**/*.js'], ['jsnomin','lint']);
 	gulp.watch('./src/css/*.css', ['cssnomin']);
 });
 
-gulp.task('watchiis', function() {
+gulp.task('watchremote', function() {
 
 	// start livereload
 	livereload.listen();
-	reloading = true;
+	remotereload = true;
 
-    gulp.watch(['./src/*.html'], ['root']);
-    gulp.watch(['./src/components/**/*.html'], ['views']);
-    gulp.watch(['./src/components/**/*.js','./src/app/**/*.js'], ['jsnomin','lint','unitlight']);
-	gulp.watch('./src/css/*.css', ['cssnomin']);
+    gulp.watch(['./src/*.{html,json}'], ['remoteroot']);
+    gulp.watch(['./src/components/**/*.html'], ['remoteviews']);
+    gulp.watch(['./src/components/**/*.js','./src/app/**/*.js'], ['remotejs']);
+	gulp.watch('./src/css/*.css', ['remotecss']);
+});
+
+// remote versions of the tasks so the upload doesn't happen until the file is generated
+gulp.task('remoteroot', function(done){
+	runsequence('root','upload',done);
+});
+gulp.task('remoteviews', function(done){
+	runsequence('views','upload',done);
+});
+gulp.task('remotejs', function(done){
+	// todo add headless unit testing
+	runsequence('jsnomin','lint','upload',done);
+});
+gulp.task('remotecss', function(done){
+	runsequence('cssnomin','upload',done);
 });
 
 // copies all unminified resources to dist and starts a local server
-gulp.task('copydev', function() {
-	runsequence('views','cssnomin','img','jsnomin','root');
+gulp.task('copydev', function(done) {
+	runsequence('views','cssnomin','img','jsnomin','root',done);
 });
 
-gulp.task('default', function() {
-	runsequence('clean','bower','copydev','watch');
+gulp.task('default', function(done) {
+	runsequence('clean','bower','copydev','watch',done);
 });
 
-gulp.task('iis', function() {
-	runsequence('clean','bower','copydev','watchiis');
+gulp.task('remote', function(done) {
+	runsequence('clean','bower','copydev','watchremote',done);
 });

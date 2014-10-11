@@ -8,13 +8,13 @@
 			</ol>
 		</div>
 		<div class="browse-container">
-			<i class="browse-container-name-icon " browse-icon="{{container.data.type}},{{container.data.id}}"></i>
+			<i class="browse-container-name-icon fa fa-3x " browse-icon="{{container.data.icon}}"></i>
 			<div class="browse-container-name">{{container.data.name}}</div>
 		</div>
 		<div>
 			<ul class="browse-panel">
 				<li ng-repeat="node in nodes track by node.id" class="browse-item" ng-click="openNode(node)">
-					<i class="browse-icon " browse-icon="{{node.type}},{{node.id}}"></i>
+					<i class="browse-icon fa fa-2x " browse-icon="{{node.icon}}"></i>
 					<div class="browse-details">
 						<span class="browse-name">{{node.name}}</span><br>
 						<span class="browse-details">Modified: {{setDate(node.modify_date)}}</span>

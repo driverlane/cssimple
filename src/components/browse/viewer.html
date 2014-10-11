@@ -10,14 +10,13 @@
 	<div ng-show="!viewer.error">
 		<div class="modal-body" ng-show="!viewer.enabled">
 			<p class="bg-info text-center">&nbsp;<br>
-			The item cannot be opened with this viewer. It is a custom Content Server object.<br>
-			Please use MMG Library to view this item.<br>&nbsp;</p>
+			This item cannot be opened. It is a custom Content Server object.<br>
+			Please use Content Server to view this item.<br>&nbsp;</p>
 		</div>
 		<div ng-show="viewer.enabled">
 			<div class="modal-body" ng-show="viewer.supportedType === false">
 				<p class="bg-warning text-center">&nbsp;<br>
-				The file format cannot be opened with this viewer.<br>
-				Please ask the document owner to save it as an Acrobat document.<br>&nbsp;</p>
+				This file format cannot be opened with this viewer.<br>&nbsp;</p>
 			</div>
 			<div ng-show="viewer.supportedType === true">
 				<iframe style="width:100%;height:800px;" frameborder="0" src="{{source}}"></iframe>

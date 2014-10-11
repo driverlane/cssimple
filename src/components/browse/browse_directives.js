@@ -4,94 +4,78 @@
     0.1.0 - initial version October 2014 Mark Farrall
     --------------------------------------------------------------------------------  */
 	
-angular.module('browse').directive('browseIcon', function ($q, csApi) {
+angular.module('browse').directive('browseIcon', function ($q, $log, csApi) {
 
-	var objectIcons = [
-		{ id: '0', icon: 'fa-folder-open'},
-		{ id: '141', icon: 'fa-home'}
+	var icons = [
+		{ id: '/img/webdoc/folder.gif', icon: 'fa-folder-open'},
+		{ id: '/img/webdoc/icon_library.gif', icon: 'fa-home' },
+		{ id: '/img/webdoc/appexel.gif', icon: 'fa-file-excel-o' },
+		{ id: '/img/webdoc/appgif.gif', icon: 'fa-file-image-o' },
+		{ id: '/img/webdoc/appiexpl.gif', icon: 'fa-file-code-o' },
+		{ id: '/img/webdoc/appjpeg.gif', icon: 'fa-file-image-o' },
+		{ id: '/img/webdoc/apppdf.gif', icon: 'fa-file-pdf-o'},
+		{ id: '/img/webdoc/apppoin.gif', icon: 'fa-file-powerpoint-o' },
+		{ id: '/img/webdoc/appproj.gif', icon: 'fa-file-text-o' },
+		{ id: '/img/webdoc/apptaro.gif', icon: 'fa-file-archive-o' },
+		{ id: '/img/webdoc/apptext.gif', icon: 'fa-file-text-o' },
+		{ id: '/img/webdoc/appvisio.gif', icon: 'fa-file-text-o' },
+		{ id: '/img/webdoc/appword.gif', icon: 'fa-file-word-o'},
+		{ id: '/img/webdoc/appxml.gif', icon: 'fa-file-text-o'},
+		{ id: '/img/webdoc/appzip.gif', icon: 'fa-file-archive-o'},
+		{ id: '/img/project/16project.gif', icon: 'fa-folder-open-o'},
+		{ id: '/img/folder_icons/folder1.gif', icon: 'fa-folder-open'},
+		{ id: '/img/folder_icons/folder2.gif', icon: 'fa-folder-open'},
+		{ id: '/img/folder_icons/folder3.gif', icon: 'fa-folder-open'},
+		{ id: '/img/folder_icons/folder4.gif', icon: 'fa-folder-open'},
+		{ id: '/img/folder_icons/folder5.gif', icon: 'fa-folder-open'},
+		{ id: '/img/folder_icons/folder6.gif', icon: 'fa-folder-open'},
+		{ id: '/img/folder_icons/folder7.gif', icon: 'fa-folder-open'},
+		{ id: '/img/folder_icons/folder8.gif', icon: 'fa-folder-open'},
+		{ id: '/img/folder_icons/folder9.gif', icon: 'fa-folder-open'},
+		{ id: '/img/folder_icons/folder10.gif', icon: 'fa-folder-open'},
+		{ id: '/img/folder_icons/folder11.gif', icon: 'fa-folder-open'},
+		{ id: '/img/folder_icons/folder12.gif', icon: 'fa-folder-open'},
+		{ id: '/img/folder_icons/folder13.gif', icon: 'fa-folder-open'},
+		{ id: '/img/folder_icons/folder14.gif', icon: 'fa-folder-open'},
+		{ id: '/img/folder_icons/folder15.gif', icon: 'fa-folder-open'},
+		{ id: '/img/folder_icons/folder16.gif', icon: 'fa-folder-open'},
+		{ id: '/img/folder_icons/folder17.gif', icon: 'fa-folder-open'},
+		{ id: '/img/folder_icons/folder18.gif', icon: 'fa-folder-open'},
+		{ id: '/img/folder_icons/folder19.gif', icon: 'fa-folder-open'},
+		{ id: '/img/folder_icons/folder20.gif', icon: 'fa-folder-open'},
+		{ id: '/img/folder_icons/folder21.gif', icon: 'fa-folder-open'},
+		{ id: '/img/folder_icons/folder22.gif', icon: 'fa-folder-open'},
+		{ id: '/img/folder_icons/folder23.gif', icon: 'fa-folder-open'}
 	];
 	
-	var docIcons = [
-		{ type: 'application/pdf', icon: 'fa-file-pdf-o'},
-		{ type: 'application/msword', icon: 'fa-file-word-o'}
-	];
-
-	// return the icon for the object type
-	function getClasses(type, id, size) {
-		var deferred = $q.defer();
+	// return the icon for the id
+	function getIcon(id) {
 		
 		// set the default icon
 		var icon = 'fa-bars';
 
-		// set the base font classes
-		var classes = size + 'fa fa-2x ';
-		if (size === 'browse-container-name-icon ')
-			classes = size + 'fa fa-3x ';
-		
 		// get the icon
-		if (type === '144') {
-			getDocIcon(id)
-			.then(function(docIcon) {
-				icon = docIcon;
-				classes = classes + icon;
-				deferred.resolve(classes);
-			});
+		for (var i = 0;i < icons.length; i++) {
+			if (icons[i].id === id)
+				return icons[i].icon;
 		}
-		else {
-			for (var i = 0;i < objectIcons.length; i++) {
-				if (objectIcons[i].id === type)
-					icon = objectIcons[i].icon;
-			}
-			classes = classes + icon;
-			deferred.resolve(classes);
-			
-		}
-		
-		return deferred.promise;
-	}
-	
-	// returns the icon for the mime type
-	function getDocIcon(id) {
-		var deferred  = $q.defer();
-	
-		// set the default icon
-		var icon = 'fa-file';
-		
-		var versions = csApi.getVersions(id)
-		.then(function(versions) {
 
-			var type = versions.data[versions.data.length - 1].mime_type;
-			for (var i = 0;i < docIcons.length; i++) {
-				if (docIcons[i].type === type)
-					icon = docIcons[i].icon;
-			}
-			deferred.resolve(icon);
-		
-		});
-		
-		return deferred.promise;
+		$log.warn('Unknown icon: ' + id);
+		return icon;
 	}
 	
 	return {
 		restrict: 'A',
 		link: function(scope, element, atts){
 		
-			// get the arguments
-			var args = atts.browseIcon.split(',');
-			if (args[0]) {
-
-				// build the new classes
-				classes = element.attr('class');
-				getClasses(args[0], args[1], classes)
-				.then(function(classes) {
-				
-					// update the classes
+			// update the classes
+			scope.$watch('container', function() {
+				var id = atts.browseIcon;
+				if (id) {
+					classes = element.attr('class') + getIcon(id);
 					element.attr('class', classes);
-
-				});
-
-			}
-		
+				}
+			});
 		}
 	};
 

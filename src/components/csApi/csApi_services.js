@@ -3,17 +3,47 @@
     --------------------------------------------------------------------------------
     0.1.0 - initial version October 2014 Mark Farrall
     --------------------------------------------------------------------------------  */
-	
-angular.module('csApi').factory('csApi', function($rootScope, $q, Restangular, csLogin) {
 
-	/* --- variables --- */
-	var apiConfig = {
+angular.module('csApi').factory('csApiConfig', function() {
+
+	var config = {
 		apiPath: '/otcs/cs.exe/api/v1/',
 		ssoEnabled: true,
 		expiry: 30,
 		username: 'a',
 		password: 'a'
 	};
+
+	var configure = function (custom) {
+		if (!custom)
+			return;
+			
+		if (custom.apiPath)
+			config.apiPath = custom.apiPath;
+
+		if (custom.ssoEnabled)
+			config.ssoEnabled = custom.ssoEnabled;
+
+		if (custom.expiry)
+			config.expiry = custom.expiry;
+
+		if (custom.username)
+			config.username = customusernameexpiry;
+
+		if (custom.password)
+			config.password = custom.password;
+	};
+	
+	return {
+		config: config,
+		configure: configure
+	};
+
+});
+
+angular.module('csApi').factory('csApi', function($rootScope, $q, csApiConfig, Restangular, csLogin) {
+
+	/* --- variables --- */
 	
 	/* --- functions --- */
 	
@@ -24,7 +54,6 @@ angular.module('csApi').factory('csApi', function($rootScope, $q, Restangular, c
 			if (ticket !== '') {
 				Configurer.setDefaultHeaders({otcsticket: ticket});
 			}
-			// todo setup JSONP access
 		});
 	};
 	
@@ -36,12 +65,12 @@ angular.module('csApi').factory('csApi', function($rootScope, $q, Restangular, c
 		// todo get config from where?
 
 		if (username)
-			apiConfig.username = username;
+			csApiConfig.config.username = username;
 		if (password)
-			apiConfig.password = password;
+			csApiConfig.config.password = password;
 		
 		// try to login
-		userLogin(apiConfig.username, apiConfig.password)
+		userLogin(csApiConfig.config.username, csApiConfig.config.password)
 		.then(function() {
 			deferred.resolve();
 		});
@@ -53,7 +82,6 @@ angular.module('csApi').factory('csApi', function($rootScope, $q, Restangular, c
 	var userLogin = function (username, password) {
 		var deferred = $q.defer();
 		
-		//restangular = configureConnection(apiConfig.apiPath);
 		restangular.one('auth').customPOST(
 			{},
 			'',
@@ -62,10 +90,10 @@ angular.module('csApi').factory('csApi', function($rootScope, $q, Restangular, c
 		)
 		.then(function(auth) {
 			// todo test if we've got a ticket
-			restangular = configureConnection(apiConfig.apiPath, auth.ticket);
+			restangular = configureConnection(csApiConfig.config.apiPath, auth.ticket);
 			connected = true;
-			apiConfig.expires = new Date();
-			apiConfig.expires.setMinutes(apiConfig.expires.getMinutes() + (apiConfig.expiry - 5));
+			csApiConfig.config.expires = new Date();
+			csApiConfig.config.expires.setMinutes(csApiConfig.config.expires.getMinutes() + (csApiConfig.config.expiry - 5));
 			deferred.resolve(auth.ticket);
 			
 			// todo display login if it fails
@@ -80,8 +108,8 @@ angular.module('csApi').factory('csApi', function($rootScope, $q, Restangular, c
 
 		// todo skip this if the ticket isn't expired
 		var now = new Date();
-		if (!apiConfig.expires || apiConfig.expires < now) {
-			userLogin(apiConfig.username, apiConfig.password)
+		if (!csApiConfig.config.expires || csApiConfig.config.expires < now) {
+			userLogin(csApiConfig.config.username, csApiConfig.config.password)
 			.then(function() {
 				deferred.resolve();
 			});
@@ -198,7 +226,7 @@ angular.module('csApi').factory('csApi', function($rootScope, $q, Restangular, c
 	/* --- service initialisation ---*/
 
 	// set up the API connection
-	var restangular = configureConnection(apiConfig.apiPath);
+	var restangular = configureConnection(csApiConfig.config.apiPath);
 
 	// get any config and login
 	init();
