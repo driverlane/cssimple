@@ -2,7 +2,7 @@
 	<div ng-show="status.allLoaded">
 		<div>
 			<ol class="breadcrumb" ng-show="crumbs.length">
-				<li ng-repeat="crumb in crumbs" ng-class="{'active':$last}">
+				<li ng-repeat="crumb in crumbs track by crumb.id">
 					<a href="#/browse/{{crumb.id}}"">{{crumb.name}}</a>
 				</li>
 			</ol>

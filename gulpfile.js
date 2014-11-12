@@ -1,26 +1,25 @@
 var gulp = require('gulp'),
-clean = require('gulp-rimraf'),
+annotate = require('gulp-ng-annotate'),
+argv = require('yargs').argv,
+bowerfiles = require('main-bower-files'),
 changed = require('gulp-changed'),
+clean = require('gulp-rimraf'),
 concat = require('gulp-concat'),
 cssminify = require('gulp-minify-css'),
-rename = require('gulp-rename'),
-imagemin = require('gulp-imagemin'),
-stripdebug = require('gulp-strip-debug'),
-uglify = require('gulp-uglify'),
-jshint = require('gulp-jshint'),
 filter = require('gulp-filter'),
 flatten = require('gulp-flatten'),
-bowerfiles = require('main-bower-files'),
-annotate = require('gulp-ng-annotate'),
-karma = require('karma').server,
-argv = require('yargs').argv,
-runsequence = require('run-sequence'),
-livereload = require('gulp-livereload'),
 gulpif = require('gulp-if'),
+gutil = require('gulp-util'),
+imagemin = require('gulp-imagemin'),
+jshint = require('gulp-jshint'),
+karma = require('karma'),
+karmaParseConfig = require('karma/lib/config').parseConfig,
+livereload = require('gulp-livereload'),
 plumber = require('gulp-plumber'),
-protractor = require('protractor'),
-exec = require('child_process').exec,
-gutil = require('gulp-util');
+rename = require('gulp-rename'),
+runsequence = require('run-sequence'),
+stripdebug = require('gulp-strip-debug'),
+uglify = require('gulp-uglify');
 
 /* testing tasks */
 
@@ -32,45 +31,49 @@ gulp.task('lint', function() {
         .pipe(jshint.reporter('default'));
 });
 
+function runKarma(configFilePath, options, cb) {
+ 
+	configFilePath = __dirname + '\\' + configFilePath;
+ 
+	var server = karma.server;
+	var log=gutil.log, colors=gutil.colors;
+	var config = karmaParseConfig(configFilePath, {});
+ 
+    Object.keys(options).forEach(function(key) {
+      config[key] = options[key];
+    });
+ 
+	server.start(config, function(exitCode) {
+		log('Karma has exited with ' + colors.red(exitCode));
+		cb();
+		process.exit(exitCode);
+	});
+}
+
 // use karma to run unit tests
 gulp.task('unit', function(done) {
-	/*karma.start({
-		configFile: __dirname + '/karma.conf.js',
+	runKarma('karma.conf.js', {
+		autoWatch: false,
 		singleRun: true
-	}, done);*/
-	return;
+	}, done);
 });
 
 // headless version for watch based testing
 gulp.task('unitlight', function(done) {
-	/*karma.start({
-		configFile: __dirname + '/karma.conf.js',
+	runKarma('karma.conf.js', {
+		autoWatch: false,
 		singleRun: true,
-		browsers: ['PhantomJS']
-	}, done);*/
-	return;
+		browsers: 'PhantomJS'
+	}, done);
 });
 
 // use protractor to run system tests
 gulp.task('system', function (cb) {
-	/*exec('node .\\node_modules\\protractor\\bin\\protractor -configFile protractor.config.js', function (err, stdout, stderr) {
-		console.log(stdout);
-		console.log(stderr);
-		cb(err);
-	});*/
+	// todo set up system testing
 	return;
 });
 
-// download/update the selenium server
-gulp.task('updatewebdriver', function (cb) {
-	exec('node .\\node_modules\\protractor\\bin\\webdriver-manager update --ie', function (err, stdout, stderr) {
-		console.log(stdout);
-		console.log(stderr);
-		cb(err);
-	});
-});
-
-/* dist tasks */
+/* --- dist build tasks --- */
 
 // clean the dist folder
 gulp.task('clean', function() {
@@ -182,18 +185,18 @@ gulp.task('copy', ['css','img','js','root','views']);
 
 // clean and build dist
 gulp.task('build', function(done) {
-	// add unit and system testing
-	runsequence('lint','clean','bower','copy',done);
+	// todo add system testing
+	runsequence('lint','unit','clean','bower','copy',done);
 });
 
 /* upload task */
 
-// copy dist to the server/environment specified (uses yargs), cleaning it first
+// copy dist to the server/environment specified (uses yargs)
 gulp.task('upload', function() {
 	var paths = getPaths();
 	for (var i = 0; i < paths.length; i++) {
 		gulp.src('./dist/**/*.*')
-			.pip(changed(paths[i]))
+			.pipe(changed(paths[i]))
 			.pipe(gulp.dest(paths[i]))
 			.pipe(gulpif(remotereload, livereload()));
 	}
@@ -202,13 +205,12 @@ gulp.task('upload', function() {
 
 // converts the argument to an array of paths
 function getPaths() {
-
 	var paths = [];
+	var env = getEnv();
 	if (argv.server) {
-		paths[0] = '\\\\' + argv.server + dev.path;
+		paths[0] = '\\\\' + argv.server + env.path;
 	}
 	else {
-		var env = getEnv(argv.env);
 		for (var i = 0; i < env.servers.length; i++) {
 			paths[i] = '\\\\' + env.servers[i] + env.path;
 		}
@@ -216,21 +218,39 @@ function getPaths() {
 	return paths;
 }
 
-// return the environment, defaulting to cs105
+// return the environment, defaulting to content
 function getEnv(name) {
 
-	var cs105 = {"servers": ['content.cgi.demo'], 
-		"path": '\\d$\\opentext\\wwwroot\\res\\csdumb\\'};
-	var cs10 = {"servers": ['content2.cgi.demo'], 
-		"path": '\\d$\\opentext\\wwwroot\\res\\csdumb\\'};
+	var content = {
+		servers: ['content.cgi.demo'],
+		path: '\\d$\\opentext\\wwwroot\\res\\uichanges\\'
+	};
+	var azure = {
+		servers: ['10.0.0.4'],
+		path: '\\e$\\opentext\\wwwroot\\res\\uichanges\\'
+	};
 
-	if (name === 'cs10') {
-		console.log('copying to Cloudshare CS 10');
-		return cs10;
+	// return a single server
+	if (argv.server) {
+		if (content.servers.indexOf(argv.server) >= 0) {
+			console.log('Using server ' + argv.server);
+			return content;
+		}
+		
+		console.log('Using server ' + argv.server);
+		return azure;
 	}
-	
-	console.log('copying to Cloudshare CS 10.5');
-	return cs105;
+	// return an environment
+	else {
+		if (argv.env === 'content') {
+			console.log('Using environment content');
+			return content;
+		}
+		
+		console.log('Using environment azure');
+		return azure;
+	}
+
 }
 
 /* development tasks */
@@ -238,6 +258,7 @@ function getEnv(name) {
 var localreload = false;
 var remotereload = false;
 
+// watches for changes and updates a local server
 gulp.task('watch', function() {
 	var connect = require('connect');
 	var serveStatic = require('serve-static');
@@ -259,6 +280,7 @@ gulp.task('watch', function() {
 	gulp.watch('./src/css/*.css', ['cssnomin']);
 });
 
+// watches for changes and updates a remote server
 gulp.task('watchremote', function() {
 
 	// start livereload
@@ -287,14 +309,14 @@ gulp.task('remotecss', function(done){
 });
 
 // copies all unminified resources to dist and starts a local server
-gulp.task('copydev', function(done) {
-	runsequence('views','cssnomin','img','jsnomin','root',done);
-});
+gulp.task('copydev', ['cssnomin','img','jsnomin','root']);
 
+// sets up the unminified version of the code and starts the local watch task
 gulp.task('default', function(done) {
 	runsequence('clean','bower','copydev','watch',done);
 });
 
+// sets up the unminified version of the code and starts the remote watch task
 gulp.task('remote', function(done) {
-	runsequence('clean','bower','copydev','watchremote',done);
+	runsequence('clean','bower','copydev','upload','watchremote',done);
 });
