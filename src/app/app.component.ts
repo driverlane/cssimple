@@ -10,18 +10,18 @@ import { Title } from '@angular/platform-browser';
     <app-header></app-header>
   </div>
   <div class="app-body">
+    <app-toaster></app-toaster>
     <router-outlet></router-outlet>
   </div>
   <div class="app-footer">
     <app-footer></app-footer>
   </div>
-</div>
-`
+</div>`
 })
 
 export class AppComponent {
 
-  constructor (private title: Title) {
+  constructor(private title: Title) {
     this.title.setTitle(environment.title);
   }
 

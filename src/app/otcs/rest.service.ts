@@ -15,15 +15,15 @@ export class RestService {
 
   nodesGet(id: number | string, ticket: string, fields: Array<string> = [], expand: Array<string> = [],
     expand_fields: Array<string> = []): Promise<ServiceResponse> {
-      return new Promise((resolve, reject) => {
+    return new Promise((resolve, reject) => {
       let url = this.urlRoot + '/api/v1/nodes/' + id.toString() + '/nodes';
       url = this.addFields(url, fields);
       url = this.addExpand(url, expand);
       url = this.addExpandFields(url, expand_fields);
 
       console.log('here ' + url);
-      const headers = { headers: new HttpHeaders().set('otcsticket', ticket) }
-      this.http.get(url).toPromise()
+      const headers = new HttpHeaders().set('otcsticket', ticket);
+      this.http.get(url, { headers: headers }).toPromise()
         .then(response => {
           resolve(new ServiceResponse({ result: (<any>response).data }));
         })

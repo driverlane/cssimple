@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { environment } from '../../../environments/environment';
 import { ActivatedRoute } from '@angular/router';
 import { AppService } from '../../core/app.service';
+import { ToasterService } from '../../toaster/toaster.service';
 
 
 @Component({
@@ -14,7 +15,7 @@ export class BrowseComponent implements OnInit {
   id: any;
   children: any;
 
-  constructor(private app: AppService, private route: ActivatedRoute) { }
+  constructor(private app: AppService, private route: ActivatedRoute, private toaster: ToasterService) { }
 
   ngOnInit() {
     this.id = this.route.snapshot.paramMap.get('id');
@@ -23,6 +24,7 @@ export class BrowseComponent implements OnInit {
     }
     this.app.getChildren(this.id)
       .then(response => this.children = response)
+      .catch(error => this.toaster.showToast(error));
   }
 
 }
