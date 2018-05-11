@@ -3,7 +3,10 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-  production: false
+  production: false,
+  cgiPath: '/otcs/cs.exe',
+  start: 2000,
+  title: 'otcs-simple'
 };
 
 /*
@@ -13,3 +16,25 @@ export const environment = {
  * because it will have performance impact when throw error
  */
 // import 'zone.js/dist/zone-error';  // Included with Angular CLI.
+
+// add some cS environment stuff
+(() => {
+  if (!cookieExists()) {
+    console.log('Dev harness adding llcookie');
+    const d = new Date();
+    d.setTime(d.getTime() + (24 * 60 * 60 * 1000));
+    const expires = 'expires=' + d.toUTCString();
+    document.cookie = 'LLCookie=adevticket;' + expires + ';path=/';
+  }
+})();
+
+function cookieExists(): boolean {
+  let response = false;
+  const name = 'LLCookie=';
+  decodeURIComponent(document.cookie).split(';').forEach(cookie => {
+    if (cookie.startsWith(name)) {
+      response = true;
+    }
+  });
+  return response;
+}

@@ -1,14 +1,52 @@
 <!doctype html>
 <html lang="en">
+
 <head>
   <meta charset="utf-8">
-  <title>OtcsSimple</title>
   <base href="/">
 
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="stylesheet" href="/assets/styles.css">
 </head>
+
 <body>
-  <app-root></app-root>
+  <app-root class="app-container">
+    <section class="app-header hero is-primary">
+      <div class="hero-head">
+        <nav class="navbar is-transparent"></nav>
+      </div>
+      <div class="hero-body">
+        <div class="container">
+          <h1 class="title is-2">otcs-simple</h1>
+          <h2 class="subtitle">
+            A simple, read only user interface for Content Server.
+          </h2>
+        </div>
+      </div>
+    </section>
+    <div class="app-body">
+      <noscript>
+        <div class="section has-text-centered">
+          <p>You disabled JavaScript? Wow, heavy. This site is going to be useless to you then.</p>
+        </div>
+        <div class="section has-text-centered">
+          <img src="https://media.giphy.com/media/7TNzAvTwnUX8Q/giphy.gif">
+        </div>
+      </noscript>
+    </div>
+    <footer class="app-footer footer dl-footer has-text-centered">
+      <p>
+        <strong class="has-text-weight-semibold">
+          Created by
+          <a href="https://driverlane.com.au">Driver Lane</a>
+        </strong>
+      </p>
+      <p>
+        <small>&copy; Driver Lane</small>
+      </p>
+    </footer>
+  </app-root>
 </body>
+
 </html>

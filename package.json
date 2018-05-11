@@ -3,11 +3,13 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
-    "build": "ng build",
+    "dev": "npm run styles && ng serve --proxy-config proxy.conf.json",
+    "start": "npm run styles && ng serve",
+    "build": "npm run styles && ng build",
     "test": "ng test",
     "lint": "ng lint",
-    "e2e": "ng e2e"
+    "e2e": "ng e2e",
+    "styles": "node-sass --output-style=compressed ./src/static-styles.scss ./src/assets/styles.css"
   },
   "private": true,
   "dependencies": {
@@ -20,6 +22,7 @@
     "@angular/platform-browser": "^6.0.0",
     "@angular/platform-browser-dynamic": "^6.0.0",
     "@angular/router": "^6.0.0",
+    "bulma": "^0.7.1",
     "core-js": "^2.5.4",
     "rxjs": "^6.0.0",
     "zone.js": "^0.8.26"

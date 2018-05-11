@@ -1,0 +1,39 @@
+@import './node_modules/bulma/sass/utilities/initial-variables';
+@import './node_modules/bulma/sass/utilities/functions';
+
+/* change bulma defaults */
+
+$primary: #8282B2;
+$primary-medium: #c0c0d8;
+$primary-light: #e6e6ef;
+$notifications: #d65050;
+
+/* add global styles */
+
+.app-container {
+  display: grid;
+  grid-template-columns: 100%;
+  grid-template-rows: auto 1fr auto;
+  grid-template-areas: "app-header" "app-body" "app-footer";
+  min-height: 100vh;
+}
+
+.app-header {
+  grid-area: app-header;
+}
+
+.app-body {
+  grid-area: app-body;
+}
+
+.app-footer {
+  grid-area: app-footer;
+}
+
+@import './node_modules/bulma/bulma';
+
+/* override bulma styles */
+
+.dl-footer {
+  padding: 1rem 1.5rem;
+}
