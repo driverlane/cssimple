@@ -1,0 +1,15 @@
+<div class="level browse-row" routerLink="/browse/{{node?.id}}">
+  <div class="level-left">
+    <div class="icon">
+      <i class="{{node | nodeIcon}}"></i>
+    </div>
+    <div class="level-item">
+      {{node?.name}}
+    </div>
+  </div>
+  <div class="level-right">
+    <div class="level-item">
+      {{node?.modify_date | date }}
+    </div>
+  </div>
+</div>

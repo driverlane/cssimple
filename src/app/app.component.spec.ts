@@ -1,6 +1,10 @@
 import { TestBed, async } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AppComponent } from './app.component';
+import { HeaderComponent } from './core/header/header.component';
+import { FooterComponent } from './core/footer/footer.component';
+import { ToasterComponent } from './toaster/toaster/toaster.component';
+import { ToastComponent } from './toaster/toast/toast.component';
 
 describe('AppComponent', () => {
 
@@ -10,7 +14,8 @@ describe('AppComponent', () => {
         RouterTestingModule
       ],
       declarations: [
-        AppComponent
+        AppComponent,
+        HeaderComponent, FooterComponent, ToasterComponent, ToastComponent
       ],
     }).compileComponents();
   }));

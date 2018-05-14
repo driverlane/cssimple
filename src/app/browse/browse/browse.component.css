@@ -1,0 +1,12 @@
+.browse-table {
+  margin-top: 1rem;
+}
+
+.browse-header {
+  border-bottom: 1px solid #363636;
+  margin-bottom: 0;
+}
+
+.browse-header .level-item {
+  padding: 0.5em 0.75em;
+}

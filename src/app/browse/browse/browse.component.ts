@@ -1,9 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { environment } from '../../../environments/environment';
-import { ActivatedRoute } from '@angular/router';
+import { Router, ActivatedRoute, ActivatedRouteSnapshot, ActivationEnd } from '@angular/router';
 import { AppService } from '../../core/app.service';
 import { ToasterService } from '../../toaster/toaster.service';
-
 
 @Component({
   selector: 'app-browse',
@@ -12,19 +11,49 @@ import { ToasterService } from '../../toaster/toaster.service';
 })
 export class BrowseComponent implements OnInit {
 
+  loading = true;
   id: any;
-  children: any;
+  node: any;
 
-  constructor(private app: AppService, private route: ActivatedRoute, private toaster: ToasterService) { }
+  constructor(private app: AppService, private route: ActivatedRoute, private router: Router, private toaster: ToasterService) { }
 
   ngOnInit() {
-    this.id = this.route.snapshot.paramMap.get('id');
+    this.getNode(this.route.snapshot);
+    this.router.events.subscribe(event => {
+      if (event instanceof ActivationEnd) {
+        this.getNode(event.snapshot);
+      }
+    });
+  }
+
+  private getNode(route: ActivatedRouteSnapshot) {
+    this.id = route.paramMap.get('id');
     if (!this.id) {
       this.id = environment.start;
     }
-    this.app.getChildren(this.id)
-      .then(response => this.children = response)
-      .catch(error => this.toaster.showToast(error));
+    if (this.id) {
+      this.id = parseInt(this.id, 10);
+      this.app.getNode(this.id)
+        .then(response => {
+          this.node = response;
+          return this.app.getChildren(this.id);
+        })
+        .then(response => {
+          this.node.children = response;
+          return this.app.getAncestors(this.id)
+        })
+        .then(response => {
+          this.node.ancestors = (<any[]>response).filter(a => a.id !== this.id);
+          this.loading = false;
+        })
+        .catch(error => {
+          this.toaster.showToast(error);
+          this.loading = false;
+        });
+    }
+    else {
+      this.loading = false;
+    }
   }
 
 }

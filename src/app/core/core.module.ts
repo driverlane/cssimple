@@ -5,10 +5,13 @@ import { ReactiveFormsModule } from '@angular/forms';
 
 import { HeaderComponent } from './header/header.component';
 import { FooterComponent } from './footer/footer.component';
+import { NodeIconPipe } from './pipes.pipe';
 
 @NgModule({
-  imports: [CommonModule, HttpClientModule, ReactiveFormsModule],
-  declarations: [HeaderComponent, FooterComponent],
-  exports: [HeaderComponent, FooterComponent]
+  imports: [
+    CommonModule, HttpClientModule, ReactiveFormsModule
+  ],
+  declarations: [HeaderComponent, FooterComponent, NodeIconPipe],
+  exports: [HeaderComponent, FooterComponent, NodeIconPipe]
 })
 export class CoreModule { }

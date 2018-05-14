@@ -11,13 +11,29 @@ export class AppService {
     this.otcs.urlRoot = environment.cgiPath;
   }
 
+  getAncestors(id: string) {
+    return new Promise((resolve, reject) => {
+      const ticket = this.ticket();
+      this.otcs.ancestorsGet(id, ticket)
+        .then(response => resolve(response.result))
+        .catch(error => reject(error));
+    });
+  }
+
   getChildren(id: string) {
     return new Promise((resolve, reject) => {
       const ticket = this.ticket();
-      this.otcs.nodesGet(id, ticket)
-        .then(response => {
-          resolve(response.result);
-        })
+      this.otcs.nodesGet(id, ticket, ['data'], ['member'])
+        .then(response => resolve(response.result))
+        .catch(error => reject(error));
+    });
+  }
+
+  getNode(id: string) {
+    return new Promise((resolve, reject) => {
+      const ticket = this.ticket();
+      this.otcs.nodeGet(id, ticket, ['data'], ['member'])
+        .then(response => resolve(response.result))
         .catch(error => reject(error));
     });
   }

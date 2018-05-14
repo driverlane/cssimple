@@ -1,0 +1,13 @@
+.browse-row {
+  line-height: 1.5rem;
+  border-bottom: 1px solid #dbdbdb;
+  cursor: pointer;
+}
+
+.browse-row:hover {
+  background-color: #fafafa;
+}
+
+.browse-row .level-item {
+  padding: 0.5em 0.75em;
+}

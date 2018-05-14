@@ -1,6 +1,10 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { RouterTestingModule } from '@angular/router/testing';
+import { HttpClientModule } from '@angular/common/http';
 
 import { BrowseComponent } from './browse.component';
+import { BrowseRowComponent } from '../browse-row/browse-row.component';
+import { NodeIconPipe } from '../../core/pipes.pipe';
 
 describe('BrowseComponent', () => {
   let component: BrowseComponent;
@@ -8,9 +12,10 @@ describe('BrowseComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ BrowseComponent ]
+      imports: [HttpClientModule, RouterTestingModule],
+      declarations: [BrowseComponent, BrowseRowComponent, NodeIconPipe]
     })
-    .compileComponents();
+      .compileComponents();
   }));
 
   beforeEach(() => {

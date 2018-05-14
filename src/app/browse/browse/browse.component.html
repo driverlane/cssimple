@@ -1,26 +1,45 @@
 <section class="section">
 
-  <nav class="breadcrumb" aria-label="breadcrumbs">
-    <ul>
-      <li>
-        <a href="#">Bulma</a>
-      </li>
-      <li>
-        <a href="#">Documentation</a>
-      </li>
-      <li>
-        <a href="#">Components</a>
-      </li>
-      <li class="is-active">
-        <a href="#" aria-current="page">Breadcrumb</a>
-      </li>
-    </ul>
-  </nav>
+  <div class="container is-fluid" *ngIf="loading">
+    spinner here Retrieving information
+  </div>
 
-  <h4 class="title is-4">Test Folder</h4>
+  <div *ngIf="!loading && node">
 
-  <div class="browse-table">
-    Browse table stuff
+    <div *ngIf="node.ancestors && node.ancestors.length > 0" class="container is-fluid">
+      <nav class="breadcrumb" aria-label="breadcrumbs">
+        <ul>
+          <li *ngFor="let ancestor of node.ancestors">
+            <a routerLink="/browse/{{node.id}}">{{ancestor.name}}</a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+
+    <div class="container is-fluid">
+      <h4 class="title is-4">{{node.name}}</h4>
+    </div>
+
+    <div class="container is-fluid browse-table">
+      <div class="level browse-header" routerLink="/browse/{{node.id}}">
+        <div class="level-left">
+          <div class="level-item">
+            Name
+          </div>
+        </div>
+        <div class="level-right">
+          <div class="level-item">
+            Modified
+          </div>
+        </div>
+      </div>
+      <app-browse-row *ngFor="let child of node.children" [node]="child"></app-browse-row>
+    </div>
+
+  </div>
+
+  <div *ngIf="!loading && !node">
+    Unable to retrieve this item.
   </div>
 
 </section>
