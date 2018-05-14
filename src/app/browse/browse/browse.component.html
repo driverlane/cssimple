@@ -1,7 +1,9 @@
 <section class="section">
 
   <div class="container is-fluid" *ngIf="loading">
-    spinner here Retrieving information
+    <div class="icon">
+      <i class="fas fa-circle-notch fa-spin"></i>
+    </div> Retrieving information
   </div>
 
   <div *ngIf="!loading && node">
@@ -34,11 +36,12 @@
         </div>
       </div>
       <app-browse-row *ngFor="let child of node.children" [node]="child"></app-browse-row>
+      <app-browse-pagination></app-browse-pagination>
     </div>
 
   </div>
 
-  <div *ngIf="!loading && !node">
+  <div class="container is-fluid" *ngIf="!loading && !node">
     Unable to retrieve this item.
   </div>
 

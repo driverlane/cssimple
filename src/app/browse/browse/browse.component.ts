@@ -15,15 +15,30 @@ export class BrowseComponent implements OnInit {
   id: any;
   node: any;
 
+  pages = 1;
+  currentPage = 1
+  pageCount = 10;
+
   constructor(private app: AppService, private route: ActivatedRoute, private router: Router, private toaster: ToasterService) { }
 
   ngOnInit() {
     this.getNode(this.route.snapshot);
     this.router.events.subscribe(event => {
       if (event instanceof ActivationEnd) {
+        this.currentPage = 1;
         this.getNode(event.snapshot);
       }
     });
+  }
+
+  changePage(pageNumber: number) {
+    this.currentPage = pageNumber;
+    this.app.getChildren(this.id, this.currentPage, this.pageCount)
+      .then(response => this.node.children = response)
+      .catch(error => {
+        this.toaster.showToast(error);
+        this.loading = false;
+      });
   }
 
   private getNode(route: ActivatedRouteSnapshot) {
@@ -36,7 +51,7 @@ export class BrowseComponent implements OnInit {
       this.app.getNode(this.id)
         .then(response => {
           this.node = response;
-          return this.app.getChildren(this.id);
+          return this.app.getChildren(this.id, this.currentPage, this.pageCount);
         })
         .then(response => {
           this.node.children = response;

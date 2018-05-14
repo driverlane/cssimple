@@ -9,6 +9,9 @@
   </div>
   <div class="level-right">
     <div class="level-item">
+      <app-browse-actions [node]="node"></app-browse-actions>
+    </div>
+    <div class="level-item browse-modified">
       {{node?.modify_date | date }}
     </div>
   </div>
