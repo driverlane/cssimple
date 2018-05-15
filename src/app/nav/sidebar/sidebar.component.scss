@@ -1,0 +1,35 @@
+.sidebar {
+  float: left;
+  height: 100%;
+  padding-top: 1rem;
+  background-color: #fafafa;
+
+  .sidebar-item {
+    padding: 0.75rem 1rem;
+    display: flex;
+
+    .sidebar-icon {
+      cursor: pointer;
+    }
+
+    .sidebar-label {
+      padding: 0 1rem;
+      cursor: pointer;
+    }
+
+  }
+  
+
+}
+
+.sidebar-slim .sidebar-label {
+  display: none;
+}
+
+.sidebar-wide .sidebar-expand {
+  display: none;
+}
+
+.sidebar-slim .sidebar-collapse {
+  display: none;
+}

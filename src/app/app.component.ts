@@ -11,7 +11,12 @@ import { Title } from '@angular/platform-browser';
   </div>
   <div class="app-body">
     <app-toaster></app-toaster>
-    <router-outlet></router-outlet>
+    <div class="sidebar-wrapper is-hidden-touch">
+      <app-sidebar></app-sidebar>
+    </div>
+    <div class="content-wrapper">
+      <router-outlet></router-outlet>
+    </div>
   </div>
   <div class="app-footer">
     <app-footer></app-footer>

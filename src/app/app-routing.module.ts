@@ -2,8 +2,9 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
 const routes: Routes = [
-  { path: '', redirectTo: '/browse', pathMatch: 'full' },
-  { path: 'browse', loadChildren: './browse/browse.module#BrowseModule' }
+  { path: '', redirectTo: '/home', pathMatch: 'full' },
+  { path: 'browse', loadChildren: './browse/browse.module#BrowseModule' },
+  { path: 'home', loadChildren: './home/home.module#HomeModule' }
 ];
 
 @NgModule({

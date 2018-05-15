@@ -1,9 +1,9 @@
-<div class="level browse-row" routerLink="/browse/{{node?.id}}">
+<div class="level is-mobile browse-row" routerLink="/browse/{{node?.id}}">
   <div class="level-left">
     <div class="icon">
       <i class="{{node | nodeIcon}}"></i>
     </div>
-    <div class="level-item">
+    <div class="level-item browse-name">
       {{node?.name}}
     </div>
   </div>
@@ -11,8 +11,11 @@
     <div class="level-item">
       <app-browse-actions [node]="node"></app-browse-actions>
     </div>
-    <div class="level-item browse-modified">
+    <div class="level-item browse-modified is-hidden-touch">
       {{node?.modify_date | date }}
+    </div>
+    <div class="level-item browse-size is-hidden-touch">
+      {{node?.size_formatted }}
     </div>
   </div>
 </div>

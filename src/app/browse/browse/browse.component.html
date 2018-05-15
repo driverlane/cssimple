@@ -23,20 +23,26 @@
     </div>
 
     <div class="container is-fluid browse-table">
-      <div class="level browse-header" routerLink="/browse/{{node.id}}">
+      <div class="level is-mobile browse-header" routerLink="/browse/{{node.id}}">
         <div class="level-left">
-          <div class="level-item">
+          <div class="icon">
+            <i class=""></i>
+          </div>
+          <div class="level-item browse-name">
             Name
           </div>
         </div>
         <div class="level-right">
-          <div class="level-item">
+          <div class="level-item browse-modified is-hidden-touch">
             Modified
+          </div>
+          <div class="level-item browse-size is-hidden-touch">
+            Size
           </div>
         </div>
       </div>
       <app-browse-row *ngFor="let child of node.children" [node]="child"></app-browse-row>
-      <app-browse-pagination [currentPage]="currentPage" [pages]="pages" [itemsPerPage]="itemsPerPage" (onItemsPerPageChanged)="itemsPerPageChanged($event)"
+      <app-browse-pagination [currentPage]="currentPage" [pages]="pages" [pageSize]="pageSize" (onPageSizeChanged)="pageSizeChanged($event)"
         (onChangePage)="changePage($event)"></app-browse-pagination>
     </div>
 

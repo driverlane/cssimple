@@ -17,7 +17,7 @@ export class BrowseComponent implements OnInit {
 
   pages = 1;
   currentPage = 1
-  itemsPerPage = 10;
+  pageSize = 10;
 
   constructor(private app: AppService, private route: ActivatedRoute, private router: Router, private toaster: ToasterService) { }
 
@@ -30,32 +30,28 @@ export class BrowseComponent implements OnInit {
       }
     });
     const config = (JSON.parse(localStorage.getItem('otcs-simple')) || {});
-    if (config.itemsPerPage) {
-      this.itemsPerPage = config.itemsPerPage;
+    if (config.pageSize) {
+      this.pageSize = config.pageSize;
     }
   }
 
   changePage(pageNumber: number) {
-    console.log('changing page');
     this.currentPage = pageNumber;
-    this.app.getChildren(this.id, this.currentPage, this.itemsPerPage)
-      .then(response => {
-        this.node.children = response;
-        this.pages = Math.ceil(this.node.children.length / this.itemsPerPage);
-      })
+    this.app.getChildren(this.id, this.currentPage, this.pageSize)
+      .then(response => this.node.children = response)
       .catch(error => {
         this.toaster.showToast(error);
         this.loading = false;
       });
   }
 
-  itemsPerPageChanged(items: number) {
-    console.log('changed ' + items);
-    if (this.itemsPerPage !== items) {
-      this.itemsPerPage = items;
+  pageSizeChanged(items: number) {
+    if (this.pageSize !== items) {
+      this.pageSize = items;
+      this.pages = Math.ceil(this.node.container_size / this.pageSize);
       this.changePage(1);
       const config = (JSON.parse(localStorage.getItem('otcs-simple')) || {});
-      config.itemsPerPage = items;
+      config.pageSize = items;
       localStorage.setItem('otcs-simple', JSON.stringify(config));
     }
   }
@@ -70,11 +66,11 @@ export class BrowseComponent implements OnInit {
       this.app.getNode(this.id)
         .then(response => {
           this.node = response;
-          return this.app.getChildren(this.id, this.currentPage, this.itemsPerPage);
+          this.pages = Math.ceil(this.node.container_size / this.pageSize);
+          return this.app.getChildren(this.id, this.currentPage, this.pageSize);
         })
         .then(response => {
           this.node.children = response;
-          this.pages = Math.ceil(this.node.children.length / this.itemsPerPage);
           return this.app.getAncestors(this.id)
         })
         .then(response => {

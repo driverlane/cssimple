@@ -20,10 +20,10 @@ export class AppService {
     });
   }
 
-  getChildren(id: string, currentPage: number, pageCount: number) {
+  getChildren(id: string, pageNumber: number, pageCount: number) {
     return new Promise((resolve, reject) => {
       const ticket = this.ticket();
-      this.otcs.nodesGet(id, ticket, ['data'], ['member'])
+      this.otcs.nodesGet(id, pageNumber, pageCount, ticket, ['data'], ['member'])
         .then(response => resolve(response.result))
         .catch(error => reject(error));
     });

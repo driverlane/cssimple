@@ -10,3 +10,17 @@
 .browse-header .level-item {
   padding: 0.5em 0.75em;
 }
+
+.browse-name {
+  display: block;
+}
+
+.browse-modified {
+  width: 8rem;
+  display: block;
+}
+
+.browse-size {
+  width: 7rem;
+  display: block;
+}

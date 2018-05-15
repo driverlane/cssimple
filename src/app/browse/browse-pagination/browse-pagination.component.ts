@@ -10,27 +10,27 @@ export class BrowsePaginationComponent implements OnChanges {
 
   @Input() pages;
   @Input() currentPage = 1;
-  @Input() itemsPerPage = 10;
-  @Output() onItemsPerPageChanged = new EventEmitter<number>();
+  @Input() pageSize = 10;
+  @Output() onPageSizeChanged = new EventEmitter<number>();
   @Output() onChangePage = new EventEmitter<number>();
 
   form: FormGroup
 
   constructor() {
     this.form = new FormGroup({
-      items: new FormControl(this.itemsPerPage)
+      items: new FormControl(this.pageSize)
     });
     this.form.valueChanges.subscribe(value => {
-      this.onItemsPerPageChanged.emit(value.items);
+      this.onPageSizeChanged.emit(value.items);
     });
   }
 
   ngOnChanges(changes: SimpleChanges) {
     this.form = new FormGroup({
-      items: new FormControl(this.itemsPerPage)
+      items: new FormControl(this.pageSize)
     });
     this.form.valueChanges.subscribe(value => {
-      this.onItemsPerPageChanged.emit(value.items);
+      this.onPageSizeChanged.emit(value.items);
     });
   }
 

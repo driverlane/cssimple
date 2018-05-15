@@ -24,10 +24,19 @@ $notifications: #d65050;
 
 .app-body {
   grid-area: app-body;
+  display: flex;
 }
 
 .app-footer {
   grid-area: app-footer;
+}
+
+.sidebar-wrapper {
+  flex-grow: 0;
+}
+
+.content-wrapper {
+  flex-grow: 1;
 }
 
 @import './node_modules/bulma/bulma';

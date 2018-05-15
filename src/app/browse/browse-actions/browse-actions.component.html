@@ -1,15 +1,16 @@
-<a (click)="viewNode()">
-  <div *ngIf="view" class="icon">
-    <i class="fas fa-book"></i>
+<div class="browse-actions">
+  <div class="action-icons is-hidden-touch">
+    <a (click)="copyEmailLink()">
+      <div class="icon">
+        <i class="fas fa-envelope"></i>
+      </div>
+    </a>
   </div>
-</a>
-<a (click)="editNode()">
-  <div *ngIf="edit" class="icon">
-    <i class="fas fa-book"></i>
+  <div class="action-menu">
+    <a (click)="showMenu()">
+      <div class="icon">
+        <i class="fas fa-ellipsis-h"></i>
+      </div>
+    </a>
   </div>
-</a>
-<a (click)="addEmailLink()">
-  <div *ngIf="emailLink" class="icon">
-    <i class="fas fa-envelope"></i>
-  </div>
-</a>
+</div>

@@ -1,0 +1,24 @@
+<div class="sidebar" [class.sidebar-wide]="!sidebarSlim" [class.sidebar-slim]="sidebarSlim">
+  <div class="sidebar-item">
+    <div class="icon sidebar-icon" routerLink="/home">
+      <i class="fas fa-home"></i>
+    </div>
+    <div class="sidebar-label" routerLink="/home">Home</div>
+  </div>
+  <div class="sidebar-item">
+    <div class="icon sidebar-icon" routerLink="/browse">
+      <i class="fas fa-folder"></i>
+    </div>
+    <div class="sidebar-label" routerLink="/browse">Browse</div>
+  </div>
+  <div class="sidebar-item sidebar-expand">
+    <div class="icon sidebar-icon" (click)="toggleNav()">
+      <i class="fas fa-angle-double-right"></i>
+    </div>
+  </div>
+  <div class="sidebar-item sidebar-collapse">
+    <div class="icon sidebar-icon" (click)="toggleNav()">
+      <i class="fas fa-angle-double-left"></i>
+    </div>
+  </div>
+</div>

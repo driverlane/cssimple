@@ -1,4 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { ToasterService, Toast } from '../../toaster/toaster.service';
 
 @Component({
   selector: 'app-browse-actions',
@@ -9,31 +10,18 @@ export class BrowseActionsComponent implements OnInit {
 
   @Input() node: any;
 
-  view = false;
-  viewTypes = [144]
-  edit = false;
-  editTypes = [144]
-  emailLink = true;
+  constructor(private toaster: ToasterService) { }
 
-  constructor() { }
+  ngOnInit() { }
 
-  ngOnInit() {
-    if (this.viewTypes.includes(this.node.type)) {
-      this.view = true;
-    }
-  }
-
-  addEmailLink() {
-    event.stopPropagation();
-    console.log(this.node);
-  }
-
-  editNode() {
+  showMenu() {
     event.stopPropagation();
   }
 
-  viewNode() {
+  copyEmailLink() {
     event.stopPropagation();
+    // todo: build the link address
+    this.toaster.showToast(new Toast({message: 'Link copied to your clipboard', status: 'is-success', expiry: 1000 }));
   }
 
 }

@@ -50,11 +50,17 @@ export class RestService {
     });
   }
 
-  nodesGet(id: number | string, ticket: string, fields: Array<string> = [], expand: Array<string> = [],
+  nodesGet(id: number | string, pageNumber: number, pageSize: number, ticket: string, fields: Array<string> = [], expand: Array<string> = [],
     expand_fields: Array<string> = []): Promise<ServiceResponse> {
     return new Promise((resolve, reject) => {
 
       let url = this.urlRoot + '/api/v1/nodes/' + id.toString() + '/nodes';
+      if (pageNumber) {
+        url += url.indexOf('?') < 0 ? '?page=' + pageNumber : '&page=' + pageNumber;
+      }
+      if (pageSize) {
+        url += url.indexOf('?') < 0 ? '?limit=' + pageSize : '&limit=' + pageSize;
+      }
       url = this.addFields(url, fields);
       url = this.addExpand(url, expand);
       url = this.addExpandFields(url, expand_fields);
