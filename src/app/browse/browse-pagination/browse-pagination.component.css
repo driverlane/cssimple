@@ -1,3 +1,16 @@
 .browse-pagination {
   margin-top: 1rem;
 }
+
+.browse-pagination-select {
+  margin-top: 1.2rem;
+}
+
+.browse-pagination-select .field {
+  float: right;
+}
+
+.browse-pagination-select .label {
+  float: left;
+  padding: 0.3rem 0.5rem;
+}

@@ -1,13 +1,48 @@
-<nav class="pagination is-centered browse-pagination" role="navigation" aria-label="pagination">
-    <a class="pagination-previous" disabled="currentPage === 1">Previous</a>
-    <a class="pagination-next" disabled="currentPage === pages">Next page</a>
-    <ul class="pagination-list">
-      <li><a class="pagination-link" aria-label="Goto page 1">1</a></li>
-      <li><span class="pagination-ellipsis">&hellip;</span></li>
-      <li><a class="pagination-link" aria-label="Goto page 45">45</a></li>
-      <li><a class="pagination-link is-current" aria-label="Page 46" aria-current="page">{{currentPage}}</a></li>
-      <li><a class="pagination-link" aria-label="Goto page 47">47</a></li>
-      <li><span class="pagination-ellipsis">&hellip;</span></li>
-      <li><a class="pagination-link" aria-label="Goto page 86">86</a></li>
-    </ul>
-  </nav>
+<div class="columns">
+
+  <div class="column">
+    <nav class="pagination is-centered browse-pagination" role="navigation" aria-label="pagination">
+      <button class="button pagination-previous" [disabled]="currentPage === 1" (click)="changePage(currentPage - 1)">Previous</button>
+      <button class="button pagination-next" [disabled]="currentPage === pages" (click)="changePage(currentPage + 1)">Next page</button>
+      <ul class="pagination-list">
+        <li *ngIf="currentPage !== 1">
+          <a class="pagination-link" aria-label="Goto page 1" (click)="changePage(1)">1</a>
+        </li>
+        <li *ngIf="currentPage > 3">
+          <span class="pagination-ellipsis">&hellip;</span>
+        </li>
+        <li *ngIf="currentPage > 2">
+          <a class="pagination-link" [attr.aria-label]="'Go to page ' + (currentPage - 1)" (click)="changePage(currentPage - 1)">{{currentPage - 1}}</a>
+        </li>
+        <li>
+          <a class="pagination-link is-current" [attr.aria-label]="'Page ' + currentPage" aria-current="page">{{currentPage}}</a>
+        </li>
+        <li *ngIf="(pages - currentPage) > 1">
+          <a class="pagination-link" [attr.aria-label]="'Go to page ' + (currentPage + 1)" (click)="changePage(currentPage + 1)">{{currentPage + 1}}</a>
+        </li>
+        <li *ngIf="(pages - currentPage) > 2">
+          <span class="pagination-ellipsis">&hellip;</span>
+        </li>
+        <li *ngIf="pages !== currentPage">
+          <a class="pagination-link" [attr.aria-label]="'Go to page ' + pages" (click)="changePage(pages)">{{pages}}</a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+
+  <div class="column is-2 browse-pagination-select">
+    <div class="field">
+      <label class="label">Items per page:</label>
+      <div class="select">
+        <form [formGroup]="form">
+          <select formControlName="items">
+            <option>10</option>
+            <option>20</option>
+            <option>50</option>
+          </select>
+        </form>
+      </div>
+    </div>
+  </div>
+
+</div>

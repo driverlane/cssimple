@@ -12,6 +12,6 @@ import { NodeIconPipe } from './pipes.pipe';
     CommonModule, HttpClientModule, ReactiveFormsModule
   ],
   declarations: [HeaderComponent, FooterComponent, NodeIconPipe],
-  exports: [HeaderComponent, FooterComponent, NodeIconPipe]
+  exports: [HeaderComponent, FooterComponent, NodeIconPipe, ReactiveFormsModule]
 })
 export class CoreModule { }

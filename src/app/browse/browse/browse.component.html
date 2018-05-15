@@ -36,7 +36,8 @@
         </div>
       </div>
       <app-browse-row *ngFor="let child of node.children" [node]="child"></app-browse-row>
-      <app-browse-pagination></app-browse-pagination>
+      <app-browse-pagination [currentPage]="currentPage" [pages]="pages" [itemsPerPage]="itemsPerPage" (onItemsPerPageChanged)="itemsPerPageChanged($event)"
+        (onChangePage)="changePage($event)"></app-browse-pagination>
     </div>
 
   </div>

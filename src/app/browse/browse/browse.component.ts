@@ -17,7 +17,7 @@ export class BrowseComponent implements OnInit {
 
   pages = 1;
   currentPage = 1
-  pageCount = 10;
+  itemsPerPage = 10;
 
   constructor(private app: AppService, private route: ActivatedRoute, private router: Router, private toaster: ToasterService) { }
 
@@ -29,16 +29,35 @@ export class BrowseComponent implements OnInit {
         this.getNode(event.snapshot);
       }
     });
+    const config = (JSON.parse(localStorage.getItem('otcs-simple')) || {});
+    if (config.itemsPerPage) {
+      this.itemsPerPage = config.itemsPerPage;
+    }
   }
 
   changePage(pageNumber: number) {
+    console.log('changing page');
     this.currentPage = pageNumber;
-    this.app.getChildren(this.id, this.currentPage, this.pageCount)
-      .then(response => this.node.children = response)
+    this.app.getChildren(this.id, this.currentPage, this.itemsPerPage)
+      .then(response => {
+        this.node.children = response;
+        this.pages = Math.ceil(this.node.children.length / this.itemsPerPage);
+      })
       .catch(error => {
         this.toaster.showToast(error);
         this.loading = false;
       });
+  }
+
+  itemsPerPageChanged(items: number) {
+    console.log('changed ' + items);
+    if (this.itemsPerPage !== items) {
+      this.itemsPerPage = items;
+      this.changePage(1);
+      const config = (JSON.parse(localStorage.getItem('otcs-simple')) || {});
+      config.itemsPerPage = items;
+      localStorage.setItem('otcs-simple', JSON.stringify(config));
+    }
   }
 
   private getNode(route: ActivatedRouteSnapshot) {
@@ -51,10 +70,11 @@ export class BrowseComponent implements OnInit {
       this.app.getNode(this.id)
         .then(response => {
           this.node = response;
-          return this.app.getChildren(this.id, this.currentPage, this.pageCount);
+          return this.app.getChildren(this.id, this.currentPage, this.itemsPerPage);
         })
         .then(response => {
           this.node.children = response;
+          this.pages = Math.ceil(this.node.children.length / this.itemsPerPage);
           return this.app.getAncestors(this.id)
         })
         .then(response => {
