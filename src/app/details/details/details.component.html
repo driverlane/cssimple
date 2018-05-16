@@ -1,0 +1,28 @@
+<section class="section">
+
+  <div class="container is-fluid" *ngIf="loading">
+    <div class="icon">
+      <i class="fas fa-circle-notch fa-spin"></i>
+    </div> Retrieving information
+  </div>
+
+  <div *ngIf="!loading && node">
+
+    <div *ngIf="node.ancestors && node.ancestors.length > 0" class="container is-fluid">
+      <nav class="breadcrumb" aria-label="breadcrumbs">
+        <ul>
+          <li *ngFor="let ancestor of node.ancestors">
+            <a routerLink="/browse/{{node.id}}">{{ancestor.name}}</a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+
+    <div class="container is-fluid">
+      <h4 class="title is-4">{{node.name}}</h4>
+      <p>{{node | json }}</p>
+    </div>
+
+  </div>
+
+</section>

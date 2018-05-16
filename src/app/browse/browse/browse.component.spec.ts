@@ -5,6 +5,9 @@ import { HttpClientModule } from '@angular/common/http';
 import { BrowseComponent } from './browse.component';
 import { BrowseRowComponent } from '../browse-row/browse-row.component';
 import { NodeIconPipe } from '../../core/pipes.pipe';
+import { BrowsePaginationComponent } from '../browse-pagination/browse-pagination.component';
+import { BrowseActionsComponent } from '../browse-actions/browse-actions.component';
+import { ReactiveFormsModule } from '@angular/forms';
 
 describe('BrowseComponent', () => {
   let component: BrowseComponent;
@@ -12,8 +15,8 @@ describe('BrowseComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientModule, RouterTestingModule],
-      declarations: [BrowseComponent, BrowseRowComponent, NodeIconPipe]
+      imports: [HttpClientModule, ReactiveFormsModule, RouterTestingModule],
+      declarations: [BrowseComponent, BrowseRowComponent, NodeIconPipe, BrowsePaginationComponent, BrowseActionsComponent]
     })
       .compileComponents();
   }));

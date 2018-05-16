@@ -1,4 +1,4 @@
-<div class="level is-mobile browse-row" routerLink="/browse/{{node?.id}}">
+<div class="level is-mobile browse-row" (click)="openLink(node)">
   <div class="level-left">
     <div class="icon">
       <i class="{{node | nodeIcon}}"></i>

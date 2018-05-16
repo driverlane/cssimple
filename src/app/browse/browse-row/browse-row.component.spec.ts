@@ -3,6 +3,8 @@ import { RouterTestingModule } from '@angular/router/testing';
 
 import { BrowseRowComponent } from './browse-row.component';
 import { NodeIconPipe } from '../../core/pipes.pipe';
+import { BrowseActionsComponent } from '../browse-actions/browse-actions.component';
+import { HttpClientModule } from '@angular/common/http';
 
 describe('BrowseRowComponent', () => {
   let component: BrowseRowComponent;
@@ -10,8 +12,8 @@ describe('BrowseRowComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [RouterTestingModule],
-      declarations: [ BrowseRowComponent, NodeIconPipe ]
+      imports: [HttpClientModule, RouterTestingModule],
+      declarations: [ BrowseRowComponent, NodeIconPipe, BrowseActionsComponent ]
     })
     .compileComponents();
   }));

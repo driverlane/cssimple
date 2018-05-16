@@ -5,6 +5,7 @@ import { HeaderComponent } from './core/header/header.component';
 import { FooterComponent } from './core/footer/footer.component';
 import { ToasterComponent } from './toaster/toaster/toaster.component';
 import { ToastComponent } from './toaster/toast/toast.component';
+import { SidebarComponent } from './nav/sidebar/sidebar.component';
 
 describe('AppComponent', () => {
 
@@ -15,7 +16,7 @@ describe('AppComponent', () => {
       ],
       declarations: [
         AppComponent,
-        HeaderComponent, FooterComponent, ToasterComponent, ToastComponent
+        HeaderComponent, FooterComponent, ToasterComponent, ToastComponent, SidebarComponent
       ],
     }).compileComponents();
   }));

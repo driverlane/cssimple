@@ -8,11 +8,12 @@
 
   <div *ngIf="!loading && node">
 
-    <div *ngIf="node.ancestors && node.ancestors.length > 0" class="container is-fluid">
+    <div class="browse-breadcrumbs container is-fluid">
       <nav class="breadcrumb" aria-label="breadcrumbs">
         <ul>
+          <li *ngIf="!node.ancestors || node.ancestors.length === 0">&nbsp;</li>
           <li *ngFor="let ancestor of node.ancestors">
-            <a routerLink="/browse/{{node.id}}">{{ancestor.name}}</a>
+            <a routerLink="/browse/{{ancestor.id}}">{{ancestor.name}}</a>
           </li>
         </ul>
       </nav>
@@ -41,9 +42,19 @@
           </div>
         </div>
       </div>
+      <div *ngIf="node?.children?.length === 0" class="level is-mobile browse-row" routerLink="/browse/{{node.id}}">
+        <div class="level-left">
+          <div class="icon">
+            <i class=""></i>
+          </div>
+          <div class="level-item browse-name">
+            No items
+          </div>
+        </div>
+      </div>
       <app-browse-row *ngFor="let child of node.children" [node]="child"></app-browse-row>
-      <app-browse-pagination [currentPage]="currentPage" [pages]="pages" [pageSize]="pageSize" (onPageSizeChanged)="pageSizeChanged($event)"
-        (onChangePage)="changePage($event)"></app-browse-pagination>
+      <app-browse-pagination [currentPage]="currentPage" [pages]="pages" [pageSize]="pageSize" (pageSizeChanged)="pageSizeChanged($event)"
+        (changePage)="changePage($event)"></app-browse-pagination>
     </div>
 
   </div>

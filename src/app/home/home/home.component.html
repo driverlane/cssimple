@@ -1,81 +1,123 @@
-<div class="columns">
-  <div class="column is-3">
-    <div class="dl-widget dl-widget-assignments">
-      <div class="dl-widget-header">
-        <div class="dl-widget-icon icon">
-          <i class="fas fa-question"></i>
-        </div>
-        <div class="dl-widget-title">
-          <p>My Assignments</p>
-        </div>
-      </div>
-      <div class="dl-widget-content">
-        <div class="widget-row favorite-row" data-link="null">
-          <div class="widget-row-icon icon-workflow-task"></div>
-          <div class="widget-row-thin">
-            <p>Process Document</p>
-          </div>
-        </div>
-        <div class="widget-row favorite-row" data-link="null">
-          <div class="widget-row-icon icon-workflow-task"></div>
-          <div class="widget-row-thin">
-            <p>Setup Workflow</p>
-          </div>
-        </div>
+<div class="home">
+
+  <div class="columns">
+
+    <div class="column is-12">
+      <div class="widget">
+        welcome banner
       </div>
     </div>
+
   </div>
-  <div class="column is-3">
-    <div class="dl-widget dl-widget-favorites">
-      <div class="dl-widget-header">
-        <div class="dl-widget-icon icon">
-          <i class="fas fa-question"></i>
-        </div>
-        <div class="dl-widget-title">
-          <p>Favorites</p>
-        </div>
-      </div>
-      <div class="dl-widget-content">
-        <div class="widget-row favorite-row" data-link="110230">
-          <div class="widget-row-icon icon-workflow-map"></div>
-          <div class="widget-row-thin">
-            <p>Create New Briefing</p>
-          </div>
-        </div>
-      </div>
-      <div class="dl-widget-expanded expanded-favorites">
-        <div class="dl-widget-expanded-wrapper">
-          <div class="dl-widget-header">
-            <div class="dl-widget-expanded-close">
-              <div></div>
-            </div>
-            <div class="dl-widget-icon icon">
-                <i class="fas fa-question"></i>
-              </div>
-                  <div class="dl-widget-title">
-              <p>Favorites</p>
+
+  <div class="columns">
+
+    <div class="column is-4">
+      <div class="widget is-raised">
+
+        <nav class="navbar is-success" role="navigation" aria-label="main navigation">
+          <div class="navbar-brand">
+            <div class="navbar-item">
+              <span class="icon widget-icon">
+                <i class="fas fa-star"></i>
+              </span>
+              <span class="nav-title widget-title">Favourites</span>
             </div>
           </div>
-          <div class="dl-widget-expanded-content">
-            <div class="widget-row favorite-row" data-link="110230">
-              <div class="widget-row-icon icon-workflow-map"></div>
-              <div class="widget-row-wide">
-                <div class="widget-row-name">
-                  <p>Create New Briefing</p>
-                </div>
-                <div class="widget-row-buttons icon">
-                  <i class="fas fa-info"></i>
-                </div>
-                <div class="widget-row-date">26 Mar 2018 10:03 AM</div>
-                <div class="widget-row-size">35 KB</div>
-              </div>
+          <div class="navbar-menu">
+            <div class="navbar-end">
             </div>
           </div>
+        </nav>
+
+        <div class="widget-content">
+
+          <div *ngIf="!favourites" class="widget-row">
+            No favourites available
+          </div>
+
+          <div class="widget-row" *ngFor="let favourite of favourites" (click)="openLink(favourite.properties)">
+            <div class="icon">
+              <i class="{{favourite.properties | nodeIcon}}"></i>
+            </div>
+            {{favourite.properties.name}}
+          </div>
+
         </div>
-      </div>
-      <div class="dl-widget-expand">
-        <div></div>
+
       </div>
     </div>
+    <div class="column is-4">
+      <div class="widget is-raised">
+
+        <nav class="navbar is-info" role="navigation" aria-label="main navigation">
+          <div class="navbar-brand">
+            <div class="navbar-item">
+              <span class="icon widget-icon">
+                <i class="fas fa-tasks"></i>
+              </span>
+              <span class="nav-title widget-title">My tasks</span>
+            </div>
+          </div>
+          <div class="navbar-menu">
+            <div class="navbar-end">
+            </div>
+          </div>
+        </nav>
+
+        <div class="widget-content">
+
+          <div *ngIf="!assignments" class="widget-row">
+            No assignments available
+          </div>
+
+          <div class="widget-row" *ngFor="let assignment of assignments" (click)="openLink(assignment)">
+            <div class="icon">
+              <i class="{{assignment | nodeIcon}}"></i>
+            </div>
+            {{assignment.name}}
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+    <div class="column is-4">
+      <div class="widget is-raised">
+
+        <nav class="navbar is-warning" role="navigation" aria-label="main navigation">
+          <div class="navbar-brand">
+            <div class="navbar-item">
+              <span class="icon widget-icon">
+                <i class="fas fa-clock"></i>
+              </span>
+              <span class="nav-title widget-title">Recent</span>
+            </div>
+          </div>
+          <div class="navbar-menu">
+            <div class="navbar-end">
+            </div>
+          </div>
+        </nav>
+
+        <div class="widget-content">
+
+          <div *ngIf="!recent" class="widget-row">
+            No recent items available
+          </div>
+
+          <div class="widget-row" *ngFor="let item of recent" (click)="openLink(item.properties)">
+            <div class="icon">
+              <i class="{{item.properties | nodeIcon}}"></i>
+            </div>
+            {{item.properties.name}}
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
   </div>
+
 </div>

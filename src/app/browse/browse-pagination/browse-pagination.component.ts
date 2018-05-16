@@ -11,17 +11,17 @@ export class BrowsePaginationComponent implements OnChanges {
   @Input() pages;
   @Input() currentPage = 1;
   @Input() pageSize = 10;
-  @Output() onPageSizeChanged = new EventEmitter<number>();
-  @Output() onChangePage = new EventEmitter<number>();
+  @Output() pageSizeChanged = new EventEmitter<number>();
+  @Output() changePage = new EventEmitter<number>();
 
-  form: FormGroup
+  form: FormGroup;
 
   constructor() {
     this.form = new FormGroup({
       items: new FormControl(this.pageSize)
     });
     this.form.valueChanges.subscribe(value => {
-      this.onPageSizeChanged.emit(value.items);
+      this.pageSizeChanged.emit(value.items);
     });
   }
 
@@ -30,12 +30,12 @@ export class BrowsePaginationComponent implements OnChanges {
       items: new FormControl(this.pageSize)
     });
     this.form.valueChanges.subscribe(value => {
-      this.onPageSizeChanged.emit(value.items);
+      this.pageSizeChanged.emit(value.items);
     });
   }
 
-  changePage(page: number) {
-    this.onChangePage.emit(page);
+  onChangePage(page: number) {
+    this.changePage.emit(page);
   }
 
 }

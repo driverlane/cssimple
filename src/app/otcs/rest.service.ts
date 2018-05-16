@@ -11,6 +11,50 @@ export class RestService {
 
   constructor(private http: HttpClient) { }
 
+  /* ----- members ----- */
+
+  accessedGet(ticket: string, fields: Array<string> = [], expand: Array<string> = []): Promise<ServiceResponse> {
+    return new Promise((resolve, reject) => {
+
+      let url = this.urlRoot + '/api/v2/members/accessed';
+      url = this.addFields(url, fields);
+      url = this.addExpand(url, expand);
+
+      const headers = new HttpHeaders().set('otcsticket', ticket);
+      this.http.get(url, { headers: headers }).toPromise()
+        .then(response => resolve(new ServiceResponse({ result: (<any>response).results })))
+        .catch(error => reject(new ServiceResponse(error, false)));
+    });
+  }
+
+  assignmentsGet(ticket: string, fields: Array<string> = [], expand: Array<string> = []): Promise<ServiceResponse> {
+    return new Promise((resolve, reject) => {
+
+      let url = this.urlRoot + '/api/v2/members/assignments';
+      url = this.addFields(url, fields);
+      url = this.addExpand(url, expand);
+
+      const headers = new HttpHeaders().set('otcsticket', ticket);
+      this.http.get(url, { headers: headers }).toPromise()
+        .then(response => resolve(new ServiceResponse({ result: (<any>response).results })))
+        .catch(error => reject(new ServiceResponse(error, false)));
+    });
+  }
+
+  favouritesGet(ticket: string, fields: Array<string> = [], expand: Array<string> = []): Promise<ServiceResponse> {
+    return new Promise((resolve, reject) => {
+
+      let url = this.urlRoot + '/api/v2/members/favorites';
+      url = this.addFields(url, fields);
+      url = this.addExpand(url, expand);
+
+      const headers = new HttpHeaders().set('otcsticket', ticket);
+      this.http.get(url, { headers: headers }).toPromise()
+        .then(response => resolve(new ServiceResponse({ result: (<any>response).results })))
+        .catch(error => reject(new ServiceResponse(error, false)));
+    });
+  }
+
   /* ----- nodes ----- */
 
   ancestorsGet(id: number | string, ticket: string, fields: Array<string> = [], expand: Array<string> = [],
@@ -50,8 +94,8 @@ export class RestService {
     });
   }
 
-  nodesGet(id: number | string, pageNumber: number, pageSize: number, ticket: string, fields: Array<string> = [], expand: Array<string> = [],
-    expand_fields: Array<string> = []): Promise<ServiceResponse> {
+  nodesGet(id: number | string, pageNumber: number, pageSize: number, ticket: string, fields: Array<string> = [],
+    expand: Array<string> = [], expand_fields: Array<string> = []): Promise<ServiceResponse> {
     return new Promise((resolve, reject) => {
 
       let url = this.urlRoot + '/api/v1/nodes/' + id.toString() + '/nodes';

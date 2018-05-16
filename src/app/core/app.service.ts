@@ -11,29 +11,72 @@ export class AppService {
     this.otcs.urlRoot = environment.cgiPath;
   }
 
-  getAncestors(id: string) {
+  getAssignments(): Promise<any[]> {
     return new Promise((resolve, reject) => {
       const ticket = this.ticket();
-      this.otcs.ancestorsGet(id, ticket)
+      this.otcs.assignmentsGet(ticket)
+        .then(response => resolve(response.result.map(a => a.data.assignments)))
+        .catch(error => reject(error));
+    });
+  }
+
+  getAncestors(id: string | number) {
+    return new Promise((resolve, reject) => {
+      const ticket = this.ticket();
+      this.otcs.ancestorsGet(id.toString(), ticket)
         .then(response => resolve(response.result))
         .catch(error => reject(error));
     });
   }
 
-  getChildren(id: string, pageNumber: number, pageCount: number) {
+  getChildren(id: string | number, pageNumber: number, pageCount: number) {
     return new Promise((resolve, reject) => {
       const ticket = this.ticket();
-      this.otcs.nodesGet(id, pageNumber, pageCount, ticket, ['data'], ['member'])
+      this.otcs.nodesGet(id.toString(), pageNumber, pageCount, ticket, ['data'], ['member'])
         .then(response => resolve(response.result))
         .catch(error => reject(error));
     });
   }
 
-  getNode(id: string) {
+  getFavourites(): Promise<any[]> {
     return new Promise((resolve, reject) => {
       const ticket = this.ticket();
-      this.otcs.nodeGet(id, ticket, ['data'], ['member'])
+      this.otcs.favouritesGet(ticket)
+        .then(response => resolve(response.result.map(a => a.data)))
+        .catch(error => reject(error));
+    });
+  }
+
+  getNode(id: string | number): any {
+    return new Promise((resolve, reject) => {
+      const ticket = this.ticket();
+      this.otcs.nodeGet(id.toString(), ticket, ['data'], ['member'])
         .then(response => resolve(response.result))
+        .catch(error => reject(error));
+    });
+  }
+
+  getNodeLink(node: any): any[] {
+    if (node.type === 153) {
+      return ['processes', 'assignment', node.workflow_id, node.workflow_subworkflow_id, node.workflow_subworkflow_task_id];
+    }
+    if (node.id && node.container === true) {
+      return ['browse', node.id];
+    }
+    if (node.id && node.container === false) {
+      return ['details', node.id];
+    }
+
+    console.log(`Unhandled link ${node.type} ${node.type_name} ${node.id}`);
+    console.log(node);
+    return [];
+  }
+
+  getRecentlyAccessed(): Promise<any[]> {
+    return new Promise((resolve, reject) => {
+      const ticket = this.ticket();
+      this.otcs.accessedGet(ticket)
+        .then(response => resolve(response.result.map(a => a.data)))
         .catch(error => reject(error));
     });
   }
@@ -42,6 +85,7 @@ export class AppService {
     let response = '';
     const name = 'LLCookie=';
     decodeURIComponent(document.cookie).split(';').forEach(cookie => {
+      cookie = cookie.trim();
       if (cookie.startsWith(name)) {
         response = cookie.substr(name.length);
       }

@@ -1,0 +1,18 @@
+<section class="section">
+
+  <div class="container is-fluid" *ngIf="loading">
+    <div class="icon">
+      <i class="fas fa-circle-notch fa-spin"></i>
+    </div> Retrieving information
+  </div>
+
+  <div *ngIf="!loading && assignment">
+    <div class="container is-fluid">
+      <h4 class="title is-4">Assignment details</h4>
+      <p>Workflow id: {{workflowId}}</p>
+      <p>Subworkflow id: {{subworkflowId}}</p>
+      <p>Task id: {{taskId}}</p>
+    </div>
+  </div>
+
+</section>

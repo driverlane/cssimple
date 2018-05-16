@@ -25,5 +25,5 @@ export class SidebarComponent implements OnInit {
     config.sidebarSlim = this.sidebarSlim;
     localStorage.setItem('otcs-simple', JSON.stringify(config));
   }
-  
+
 }

@@ -1,30 +1,30 @@
-<div class="columns">
+<div *ngIf="pages > 0" class="columns">
 
   <div class="column">
     <nav class="pagination is-right browse-pagination" role="navigation" aria-label="pagination">
-      <button class="button pagination-previous" [disabled]="currentPage === 1" (click)="changePage(currentPage - 1)">Previous</button>
-      <button class="button pagination-next" [disabled]="currentPage === pages" (click)="changePage(currentPage + 1)">Next page</button>
+      <button class="button pagination-previous" [disabled]="currentPage === 1" (click)="onChangePage(currentPage - 1)">Previous</button>
+      <button class="button pagination-next" [disabled]="currentPage === pages" (click)="onChangePage(currentPage + 1)">Next page</button>
       <ul class="pagination-list is-hidden-touch">
         <li *ngIf="currentPage !== 1">
-          <a class="pagination-link" aria-label="Goto page 1" (click)="changePage(1)">1</a>
+          <a class="pagination-link" aria-label="Goto page 1" (click)="onChangePage(1)">1</a>
         </li>
         <li *ngIf="currentPage > 3">
           <span class="pagination-ellipsis">&hellip;</span>
         </li>
         <li *ngIf="currentPage > 2">
-          <a class="pagination-link" [attr.aria-label]="'Go to page ' + (currentPage - 1)" (click)="changePage(currentPage - 1)">{{currentPage - 1}}</a>
+          <a class="pagination-link" [attr.aria-label]="'Go to page ' + (currentPage - 1)" (click)="onChangePage(currentPage - 1)">{{currentPage - 1}}</a>
         </li>
         <li>
           <a class="pagination-link is-current" [attr.aria-label]="'Page ' + currentPage" aria-current="page">{{currentPage}}</a>
         </li>
         <li *ngIf="(pages - currentPage) > 1">
-          <a class="pagination-link" [attr.aria-label]="'Go to page ' + (currentPage + 1)" (click)="changePage(currentPage + 1)">{{currentPage + 1}}</a>
+          <a class="pagination-link" [attr.aria-label]="'Go to page ' + (currentPage + 1)" (click)="onChangePage(currentPage + 1)">{{currentPage + 1}}</a>
         </li>
         <li *ngIf="(pages - currentPage) > 2">
           <span class="pagination-ellipsis">&hellip;</span>
         </li>
         <li *ngIf="pages !== currentPage">
-          <a class="pagination-link" [attr.aria-label]="'Go to page ' + pages" (click)="changePage(pages)">{{pages}}</a>
+          <a class="pagination-link" [attr.aria-label]="'Go to page ' + pages" (click)="onChangePage(pages)">{{pages}}</a>
         </li>
       </ul>
     </nav>

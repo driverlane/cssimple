@@ -1,3 +1,7 @@
+.browse-breadcrumbs {
+  margin-bottom: 1rem;
+}
+
 .browse-table {
   margin-top: 1rem;
 }
@@ -9,6 +13,20 @@
 
 .browse-header .level-item {
   padding: 0.5em 0.75em;
+}
+
+.browse-row {
+  line-height: 1.5rem;
+  border-bottom: 1px solid #dbdbdb;
+  cursor: pointer;
+}
+
+.browse-row .level-item {
+  padding: 0.5em 0.75em;
+}
+
+.browse-name {
+  display: block;
 }
 
 .browse-name {

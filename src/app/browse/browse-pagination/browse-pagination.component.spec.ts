@@ -1,6 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { BrowsePaginationComponent } from './browse-pagination.component';
+import { ReactiveFormsModule } from '@angular/forms';
 
 describe('BrowsePaginationComponent', () => {
   let component: BrowsePaginationComponent;
@@ -8,6 +9,7 @@ describe('BrowsePaginationComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
+      imports: [ReactiveFormsModule],
       declarations: [ BrowsePaginationComponent ]
     })
     .compileComponents();

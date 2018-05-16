@@ -5,7 +5,7 @@
     "ng": "ng",
     "dev": "npm run styles && ng serve --proxy-config proxy.conf.json",
     "start": "npm run styles && ng serve",
-    "build": "npm run styles && ng build",
+    "build": "npm run styles && ng build --prod --base-href=/otcs/otcs-simple/",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",

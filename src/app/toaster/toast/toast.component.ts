@@ -8,7 +8,7 @@ import { Toast } from '../toaster.service';
 })
 export class ToastComponent implements OnInit {
 
-  @Input() piece: Toast
+  @Input() piece: Toast;
   @Output() removed: EventEmitter<any> = new EventEmitter();
 
   constructor() { }
