@@ -9,8 +9,8 @@ import { ToasterService } from '../../toaster/toaster.service';
 })
 export class HomeComponent implements OnInit {
 
-  assignments: any[];
-  assignmentsConfig: any = {
+  tasks: any[];
+  tasksConfig: any = {
     isRaised: true,
     title: 'My tasks',
     headerIcon: 'fa-tasks',
@@ -39,32 +39,14 @@ export class HomeComponent implements OnInit {
   constructor(private app: AppService, private toaster: ToasterService) { }
 
   ngOnInit() {
-    this.app.getFavourites()
-      .then(response => {
-        this.favourites = response;
-      })
-      .catch(error => {
-        delete this.favourites;
-        this.toaster.showToast(error);
-      });
+    this.app.favourites.subscribe(a => this.favourites = a);
+    this.app.refreshFavourites();
 
-    this.app.getAssignments()
-      .then(response => {
-        this.assignments = response;
-      })
-      .catch(error => {
-        delete this.assignments;
-        this.toaster.showToast(error);
-      });
+    this.app.tasks.subscribe(a => this.tasks = a);
+    this.app.refreshTasks();
 
-    this.app.getRecentlyAccessed()
-      .then(response => {
-        this.recent = response;
-      })
-      .catch(error => {
-        delete this.recent;
-        this.toaster.showToast(error);
-      });
+    this.app.accessed.subscribe(a => this.recent = a);
+    this.app.refreshedAccessed();
   }
 
 }

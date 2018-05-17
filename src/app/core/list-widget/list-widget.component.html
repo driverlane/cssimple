@@ -23,7 +23,7 @@
       </div> Retrieving items
     </div>
 
-    <div *ngIf="!loading && !items" class="widget-row">
+    <div *ngIf="!loading && (!items || items.length === 0)" class="widget-row">
       {{config?.noItemsMessage || 'No items available'}}
     </div>
 

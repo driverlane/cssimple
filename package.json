@@ -7,7 +7,7 @@
     "start": "npm run styles && ng serve",
     "build": "npm run styles && ng build --prod --base-href=/otcs/otcs-simple/",
     "test": "ng test",
-    "lint": "ng lint",
+    "lint": "tslint -c ./src/tslint.json src/**/*.ts",
     "e2e": "ng e2e",
     "styles": "node-sass --output-style=compressed ./src/static-styles.scss ./src/assets/styles.css"
   },

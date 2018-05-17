@@ -40,14 +40,12 @@ export class ProcessesHomeComponent implements OnInit {
   constructor(private app: AppService, private toaster: ToasterService) { }
 
   ngOnInit() {
-    this.app.getAssignments()
-      .then(response => {
-        this.tasks = response;
-      })
-      .catch(error => {
-        delete this.tasks;
-        this.toaster.showToast(error);
-      });
+    this.app.tasks.subscribe(a => this.tasks = a);
+    this.app.refreshTasks();
+    this.app.initiatedJobs.subscribe(a => this.initiated = a);
+    this.app.refreshInitiatedJobs();
+    this.app.managedJobs.subscribe(a => this.managed = a);
+    this.app.refreshManagedJobs();
   }
 
 }

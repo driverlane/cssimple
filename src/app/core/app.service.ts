@@ -1,23 +1,30 @@
 import { Injectable } from '@angular/core';
 import { RestService } from '../otcs/rest.service';
 import { environment } from '../../environments/environment';
+import { Observable, BehaviorSubject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AppService {
 
+  cache: any;
+  cacheName = 'otcs-simple-cache';
+
+  private _accessed: BehaviorSubject<any[]> = new BehaviorSubject(null);
+  accessed: Observable<any[]> = this._accessed.asObservable();
+  private _favourites: BehaviorSubject<any[]> = new BehaviorSubject(null);
+  favourites: Observable<any[]> = this._favourites.asObservable();
+  private _tasks: BehaviorSubject<any[]> = new BehaviorSubject(null);
+  tasks: Observable<any[]> = this._tasks.asObservable();
+  private _initiatedJobs: BehaviorSubject<any[]> = new BehaviorSubject(null);
+  initiatedJobs: Observable<any[]> = this._initiatedJobs.asObservable();
+  private _managedJobs: BehaviorSubject<any[]> = new BehaviorSubject(null);
+  managedJobs: Observable<any[]> = this._managedJobs.asObservable();
+
   constructor(private otcs: RestService) {
     this.otcs.urlRoot = environment.cgiPath;
-  }
-
-  getAssignments(): Promise<any[]> {
-    return new Promise((resolve, reject) => {
-      const ticket = this.ticket();
-      this.otcs.assignmentsGet(ticket)
-        .then(response => resolve(response.result.map(a => a.data.assignments)))
-        .catch(error => reject(error));
-    });
+    this.cache = JSON.parse(localStorage.getItem(this.cacheName)) || {};
   }
 
   getAncestors(id: string | number) {
@@ -34,15 +41,6 @@ export class AppService {
       const ticket = this.ticket();
       this.otcs.nodesGet(id.toString(), pageNumber, pageCount, ticket, ['data'], ['member'])
         .then(response => resolve(response.result))
-        .catch(error => reject(error));
-    });
-  }
-
-  getFavourites(): Promise<any[]> {
-    return new Promise((resolve, reject) => {
-      const ticket = this.ticket();
-      this.otcs.favouritesGet(ticket)
-        .then(response => resolve(response.result.map(a => a.data.properties)))
         .catch(error => reject(error));
     });
   }
@@ -72,14 +70,71 @@ export class AppService {
     return [];
   }
 
-  getRecentlyAccessed(): Promise<any[]> {
-    return new Promise((resolve, reject) => {
-      const ticket = this.ticket();
-      this.otcs.accessedGet(ticket)
-        .then(response => resolve(response.result.map(a => a.data.properties)))
-        .catch(error => reject(error));
-    });
+  refreshedAccessed() {
+    if (this.cache.accessed) {
+      this._accessed.next(this.cache.accessed);
+    }
+    this.otcs.accessedGet(this.ticket())
+      .then(response => {
+        this.cache.accessed = response.result.map(a => a.data.properties);
+        this._accessed.next(this.cache.accessed);
+        localStorage.setItem(this.cacheName, JSON.stringify(this.cache));
+      })
+      .catch(error => console.error(error));
   }
+
+  refreshFavourites() {
+    if (this.cache.favourites) {
+      this._favourites.next(this.cache.favourites);
+    }
+    this.otcs.favouritesGet(this.ticket())
+      .then(response => {
+        this.cache.favourites = response.result.map(a => a.data.properties);
+        this._favourites.next(this.cache.favourites);
+        localStorage.setItem(this.cacheName, JSON.stringify(this.cache));
+      })
+      .catch(error => console.error(error));
+  }
+
+  refreshInitiatedJobs() {
+    if (this.cache.initiatedJobs) {
+      this._initiatedJobs.next(this.cache.initiatedJobs);
+    }
+    /*this.otcs.initiatedJobsGet(this.ticket())
+      .then(response => {
+        this.cache.initiatedJobs = response.result.map(a => a.data.properties);
+        this._initiatedJobs.next(this.cache.initiatedJobs);
+        localStorage.setItem(this.cacheName, JSON.stringify(this.cache));
+      })
+      .catch(error => console.error(error));*/
+  }
+
+  refreshManagedJobs() {
+    if (this.cache.managedJobs) {
+      this._managedJobs.next(this.cache.managedJobs);
+    }
+    /*this.otcs.managedJobsGet(this.ticket())
+      .then(response => {
+        this.cache.managedJobs = response.result.map(a => a.data.properties);
+        this._managedJobs.next(this.cache.managedJobs);
+        localStorage.setItem(this.cacheName, JSON.stringify(this.cache));
+      })
+      .catch(error => console.error(error));*/
+  }
+
+  refreshTasks() {
+    if (this.cache.tasks) {
+      this._tasks.next(this.cache.tasks);
+    }
+    this.otcs.assignmentsGet(this.ticket())
+      .then(response => {
+        this.cache.tasks = response.result.map(a => a.data.assignments);
+        this._tasks.next(this.cache.tasks);
+        localStorage.setItem(this.cacheName, JSON.stringify(this.cache));
+      })
+      .catch(error => console.error(error));
+  }
+
 
   private ticket(): string {
     let response = '';
