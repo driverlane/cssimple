@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+
 import { AppService } from '../../core/app.service';
 import { ToasterService } from '../../toaster/toaster.service';
-import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-processes-home',
@@ -10,26 +10,44 @@ import { Router } from '@angular/router';
 })
 export class ProcessesHomeComponent implements OnInit {
 
-  assignments: any[];
-  initiated: any[];
-  managed: any[];
+  tasks: any[];
+  tasksConfig: any = {
+    isRaised: true,
+    title: 'My tasks',
+    headerIcon: 'fa-tasks',
+    headerStyle: 'is-link',
+    noItemsMessage: 'No tasks available'
+  };
 
-  constructor(private app: AppService, private router: Router, private toaster: ToasterService) { }
+  initiated: any[];
+  initiatedConfig: any = {
+    isRaised: true,
+    title: 'Initiated jobs',
+    headerIcon: 'fa-map',
+    headerStyle: 'is-success',
+    noItemsMessage: 'No initiated jobs available'
+  };
+
+  managed: any[];
+  managedConfig: any = {
+    isRaised: true,
+    title: 'Managed jobs',
+    headerIcon: 'fa-map',
+    headerStyle: 'is-warning',
+    noItemsMessage: 'No managed jobs available'
+  };
+
+  constructor(private app: AppService, private toaster: ToasterService) { }
 
   ngOnInit() {
     this.app.getAssignments()
       .then(response => {
-        this.assignments = response;
+        this.tasks = response;
       })
       .catch(error => {
-        delete this.assignments;
+        delete this.tasks;
         this.toaster.showToast(error);
       });
-  }
-
-  openLink(node: any) {
-    const url = this.app.getNodeLink(node);
-    this.router.navigate(url);
   }
 
 }

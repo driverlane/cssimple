@@ -1,52 +1,9 @@
 .home {
-
   margin: 2rem 0;
 
   .columns {
     height: 80vh;
     padding: 0 2rem;
-
-    .widget {
-      height: 100%;
-
-      .widget-icon {
-        margin-right: 1rem;
-
-        svg {
-          height: 24px;
-          width: 24px;
-        }
-      }
-
-      .widget-title {
-        font-size: 1.4rem;
-      }
-
-      .widget-content {
-        background-color: #fafafa;
-        height: calc(100% - 3.2rem);
-        overflow-y: auto;
-        overflow-x: hidden;
-
-        .widget-row {
-          padding: 0.75rem;
-          border-bottom: 1px solid #e3e3e3;
-          cursor: pointer;
-        }
-
-        .widget-row:hover {
-          background-color: #e3e3e3;
-        }
-
-      }
-
-    }
-
-    .widget.is-raised {
-      border: 1px solid #c3c3c3;
-      box-shadow: 3px 3px 5px 3px #d3d3d3;
-    }
-
   }
 
 }

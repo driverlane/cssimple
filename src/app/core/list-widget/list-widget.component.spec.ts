@@ -1,25 +1,24 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { HomeComponent } from './home.component';
-import { NodeIconPipe } from '../../core/pipes.pipe';
+import { ListWidgetComponent } from './list-widget.component';
+import { NodeIconPipe } from '../pipes.pipe';
 import { HttpClientModule } from '@angular/common/http';
-import { ListWidgetComponent } from '../../core/list-widget/list-widget.component';
 import { RouterTestingModule } from '@angular/router/testing';
 
-describe('HomeComponent', () => {
-  let component: HomeComponent;
-  let fixture: ComponentFixture<HomeComponent>;
+describe('ListWidgetComponent', () => {
+  let component: ListWidgetComponent;
+  let fixture: ComponentFixture<ListWidgetComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientModule, RouterTestingModule],
-      declarations: [HomeComponent, NodeIconPipe, ListWidgetComponent]
+      declarations: [ListWidgetComponent, NodeIconPipe]
     })
       .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(HomeComponent);
+    fixture = TestBed.createComponent(ListWidgetComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

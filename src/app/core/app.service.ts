@@ -42,7 +42,7 @@ export class AppService {
     return new Promise((resolve, reject) => {
       const ticket = this.ticket();
       this.otcs.favouritesGet(ticket)
-        .then(response => resolve(response.result.map(a => a.data)))
+        .then(response => resolve(response.result.map(a => a.data.properties)))
         .catch(error => reject(error));
     });
   }
@@ -76,7 +76,7 @@ export class AppService {
     return new Promise((resolve, reject) => {
       const ticket = this.ticket();
       this.otcs.accessedGet(ticket)
-        .then(response => resolve(response.result.map(a => a.data)))
+        .then(response => resolve(response.result.map(a => a.data.properties)))
         .catch(error => reject(error));
     });
   }

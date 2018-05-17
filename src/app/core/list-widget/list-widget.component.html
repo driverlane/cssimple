@@ -1,0 +1,39 @@
+<div class="widget" [class.is-raised]="config?.isRaised === true">
+
+  <div class="navbar {{config?.headerStyle}}">
+    <div class="navbar-brand">
+      <div class="navbar-item">
+        <span class="icon widget-icon">
+          <i class="fas {{config?.headerIcon}}"></i>
+        </span>
+        <span class="nav-title widget-title">{{config?.title}}</span>
+      </div>
+    </div>
+    <div class="navbar-menu">
+      <div class="navbar-end">
+      </div>
+    </div>
+  </div>
+
+  <div class="widget-content">
+
+    <div *ngIf="loading" class="widget-row">
+      <div class="icon">
+        <i class="fas fa-circle-notch fa-spin"></i>
+      </div> Retrieving items
+    </div>
+
+    <div *ngIf="!loading && !items" class="widget-row">
+      {{config?.noItemsMessage || 'No items available'}}
+    </div>
+
+    <div class="widget-row" *ngFor="let item of items" (click)="openLink(item)">
+      <div class="icon">
+        <i class="{{item | nodeIcon}}"></i>
+      </div>
+      {{item.name}}
+    </div>
+
+  </div>
+
+</div>

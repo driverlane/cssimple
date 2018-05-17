@@ -7,16 +7,17 @@ import { RouterModule } from '@angular/router';
 import { HeaderComponent } from './header/header.component';
 import { FooterComponent } from './footer/footer.component';
 import { NodeIconPipe } from './pipes.pipe';
+import { ListWidgetComponent } from './list-widget/list-widget.component';
 
 @NgModule({
   imports: [
     CommonModule, HttpClientModule, ReactiveFormsModule, RouterModule
   ],
   declarations: [
-    HeaderComponent, FooterComponent, NodeIconPipe
+    HeaderComponent, FooterComponent, NodeIconPipe, ListWidgetComponent
   ],
   exports: [
-    HeaderComponent, FooterComponent, NodeIconPipe, ReactiveFormsModule, RouterModule
+    HeaderComponent, FooterComponent, NodeIconPipe, ReactiveFormsModule, RouterModule, ListWidgetComponent
   ]
 })
 export class CoreModule { }

@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { AppService } from '../../core/app.service';
 import { ToasterService } from '../../toaster/toaster.service';
-import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-home',
@@ -11,10 +10,33 @@ import { Router } from '@angular/router';
 export class HomeComponent implements OnInit {
 
   assignments: any[];
-  favourites: any[];
-  recent: any[];
+  assignmentsConfig: any = {
+    isRaised: true,
+    title: 'My tasks',
+    headerIcon: 'fa-tasks',
+    headerStyle: 'is-link',
+    noItemsMessage: 'No tasks available'
+  };
 
-  constructor(private app: AppService, private router: Router, private toaster: ToasterService) { }
+  favourites: any[];
+  favouritesConfig: any = {
+    isRaised: true,
+    title: 'Favourites',
+    headerIcon: 'fa-star',
+    headerStyle: 'is-success',
+    noItemsMessage: 'No favourites available'
+  };
+
+  recent: any[];
+  recentConfig: any = {
+    isRaised: true,
+    title: 'Recent',
+    headerIcon: 'fa-clock',
+    headerStyle: 'is-warning',
+    noItemsMessage: 'No recent items available'
+  };
+
+  constructor(private app: AppService, private toaster: ToasterService) { }
 
   ngOnInit() {
     this.app.getFavourites()
@@ -43,11 +65,6 @@ export class HomeComponent implements OnInit {
         delete this.recent;
         this.toaster.showToast(error);
       });
-  }
-
-  openLink(node: any) {
-    const url = this.app.getNodeLink(node);
-    this.router.navigate(url);
   }
 
 }
