@@ -6,6 +6,7 @@ const routes: Routes = [
   { path: 'browse', loadChildren: './browse/browse.module#BrowseModule' },
   { path: 'details', loadChildren: './details/details.module#DetailsModule' },
   { path: 'processes', loadChildren: './processes/processes.module#ProcessesModule' },
+  { path: 'settings', loadChildren: './settings/settings.module#SettingsModule' },
   { path: 'home', loadChildren: './home/home.module#HomeModule' }
 ];
 
