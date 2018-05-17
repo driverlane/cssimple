@@ -8,7 +8,7 @@ import { Subscription } from 'rxjs';
 @Component({
   selector: 'app-browse',
   templateUrl: './browse.component.html',
-  styleUrls: ['./browse.component.css']
+  styleUrls: ['./browse.component.scss']
 })
 export class BrowseComponent implements OnDestroy, OnInit {
 
@@ -29,23 +29,28 @@ export class BrowseComponent implements OnDestroy, OnInit {
   }
 
   ngOnInit() {
-    this.getNode();
-    this.routeEvents = this.router.events.subscribe(event => {
-      if (event instanceof ActivationEnd) {
-        this.currentPage = 1;
-        this.getNode();
-      }
-    });
     const config = (JSON.parse(localStorage.getItem('otcs-simple')) || {});
     if (config.pageSize) {
       this.pageSize = config.pageSize;
     }
+    this.getNode();
+    this.routeEvents = this.router.events.subscribe(event => {
+      if (event instanceof ActivationEnd) {
+        this.loading = true;
+        this.currentPage = 1;
+        this.getNode();
+      }
+    });
   }
 
   changePage(pageNumber: number) {
-    this.currentPage = pageNumber;
-    this.app.getChildren(this.id, this.currentPage, this.pageSize)
-      .then(response => this.node.children = response)
+    this.loading = true;
+    this.app.getChildren(this.id, pageNumber, this.pageSize)
+      .then(response => {
+        this.node.children = response;
+        this.currentPage = pageNumber;
+        this.loading = false;
+      })
       .catch(error => {
         this.toaster.showToast(error);
         this.loading = false;
@@ -70,20 +75,22 @@ export class BrowseComponent implements OnDestroy, OnInit {
     }
     if (!this.id || id !== this.id) {
       this.id = parseInt(id, 10);
+      let result: any, pages:number;
       this.app.getNode(this.id)
         .then(response => {
-          this.node = response;
-          this.pages = Math.ceil(this.node.container_size / this.pageSize);
+          result = response;
+          pages = Math.ceil(result.container_size / this.pageSize);
           return this.app.getChildren(this.id, this.currentPage, this.pageSize);
         })
         .then(response => {
-          this.node.children = response;
+          result.children = response;
           return this.app.getAncestors(this.id);
         })
         .then(response => {
-          this.node.ancestors = (<any[]>response).filter(a => a && a.id !== this.id);
+          result.ancestors = (<any[]>response).filter(a => a && a.id !== this.id);
+          this.node = result;
+          this.pages = pages;
           this.loading = false;
-          console.log(this.node);
         })
         .catch(error => {
           this.toaster.showToast(error);

@@ -1,12 +1,24 @@
 <section class="section">
 
-  <div class="container is-fluid" *ngIf="loading">
-    <div class="icon">
-      <i class="fas fa-circle-notch fa-spin"></i>
-    </div> Retrieving information
+  <div class="modal browse-loader" [class.is-active]="loading">
+    <div class="modal-background"></div>
+    <div class="modal-content">
+      <div class="browse-loader-content level">
+        <div class="level-left">
+          <div class="level-item">
+            <span class="icon is-medium">
+              <i class="fas fa-circle-notch fa-spin fa-2x"></i>
+            </span>
+          </div>
+          <div class="level-item">
+            <h5 class="title is-5">Retrieving information</h5>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
-  <div *ngIf="!loading && node">
+  <div *ngIf="node">
 
     <div class="browse-breadcrumbs container is-fluid">
       <nav class="breadcrumb" aria-label="breadcrumbs">

@@ -1,3 +1,25 @@
+.browse-loader {
+
+  .modal-background {
+    background-color: rgba(255, 255, 255, 0);
+  }
+
+  .modal-content {
+    border: 1px solid #c3c3c3;
+    box-shadow: 3px 3px 5px 3px #d3d3d3;
+  }
+
+  .browse-loader-content {
+    background-color: #fff;
+    height: 150px;
+
+    .level-left {
+      margin: auto;
+    }
+
+  }
+}
+
 .browse-breadcrumbs {
   margin-bottom: 1rem;
 }
