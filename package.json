@@ -4,7 +4,7 @@
   "scripts": {
     "ng": "ng",
     "dev": "npm run styles && ng serve --proxy-config proxy.conf.json",
-    "start": "npm run styles && ng serve",
+    "start": "ng serve",
     "build": "npm run styles && ng build --prod --base-href=/otcs/otcs-simple/",
     "test": "ng test",
     "lint": "tslint -c ./src/tslint.json src/**/*.ts",
